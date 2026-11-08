@@ -24,12 +24,16 @@ npm run dev
 Обязательные проверки качества:
 
 ```bash
+npm run audit
+npm run audit:production
 npm run lint
 npm run format:check
 npm run typecheck
 npm run test
 npm run build
 ```
+
+Команды audit проверяют соответственно полное и production-дерево зависимостей. Любое известное замечание блокирует завершение change. При замечании сначала изучи `npm audit`, затем примени совместимое обновление или обоснованный override и повтори все проверки. Не используй `npm audit fix --force`: он может молча изменить мажорные версии или откатить принятый стек.
 
 Pre-commit hook ограничивает обычный коммит 40 файлами. Только для инициализации репозитория можно явно установить `GARDENLY_ALLOW_LARGE_INIT_COMMIT=1`; для обычных коммитов изменения следует разделять.
 

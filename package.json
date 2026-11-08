@@ -17,6 +17,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
+    "audit": "npm audit --audit-level=low",
+    "audit:production": "npm audit --omit=dev --audit-level=low",
     "check:commit-size": "node scripts/check-staged-files.mjs"
   },
   "dependencies": {
@@ -29,6 +31,11 @@
     "vue-router": "^5.4.0",
     "vuetify": "^3.13.7",
     "vuetify-nuxt-module": "^1.0.0-rc.6"
+  },
+  "overrides": {
+    "deepmerge": "4.1.2",
+    "glob": "14.0.4",
+    "minimatch": "11.0.5"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.17.0",
