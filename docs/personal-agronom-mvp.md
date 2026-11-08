@@ -19,15 +19,15 @@
 
 ## 2. Технический стек
 
-| Слой | Технология |
-|---|---|
-| Фреймворк | Nuxt 4 (Vue 3, `<script setup>`, TypeScript) |
-| Режим рендеринга | SPA (`ssr: false`) |
-| UI-кит | Vuetify 3 (Material Design) |
-| Состояние | Pinia |
-| Нативная обёртка | Capacitor (Android; iOS — позже) |
-| Данные (этап 1) | Mock-repository поверх локального JSON |
-| Данные (этап 2) | Http-repository → Supabase / Go API + PostgreSQL |
+| Слой             | Технология                                       |
+| ---------------- | ------------------------------------------------ |
+| Фреймворк        | Nuxt 4 (Vue 3, `<script setup>`, TypeScript)     |
+| Режим рендеринга | SPA (`ssr: false`)                               |
+| UI-кит           | Vuetify 3 (Material Design)                      |
+| Состояние        | Pinia                                            |
+| Нативная обёртка | Capacitor (Android; iOS — позже)                 |
+| Данные (этап 1)  | Mock-repository поверх локального JSON           |
+| Данные (этап 2)  | Http-repository → Supabase / Go API + PostgreSQL |
 
 ### Ключевое архитектурное требование
 
@@ -48,16 +48,16 @@ HttpGardenRepository   ← этап 2, замена без правок UI
 
 Приоритет экранов: **01 → 05 — ядро MVP**, 06–08 — вторая очередь.
 
-| # | Экран | Маршрут | Приоритет |
-|---|---|---|---|
-| 01 | Сегодня (Today) | `/` | P0 |
-| 02 | Мой сад (Garden) | `/garden` | P0 |
-| 03 | Карточка растения (Plant) | `/plant/:id` | P0 |
-| 04 | Карточка задачи (Task) | `/task/:id` | P0 |
-| 05 | Добавить растение (Add Plant) | `/plant/new` | P0 |
-| 06 | История (History) | `/plant/:id/history` | P1 |
-| 07 | Фото / диагностика (Photo) | `/plant/:id/diagnose` | P1 (заглушка) |
-| 08 | Настройки (Settings) | `/settings` | P1 |
+| #   | Экран                         | Маршрут               | Приоритет     |
+| --- | ----------------------------- | --------------------- | ------------- |
+| 01  | Сегодня (Today)               | `/`                   | P0            |
+| 02  | Мой сад (Garden)              | `/garden`             | P0            |
+| 03  | Карточка растения (Plant)     | `/plant/:id`          | P0            |
+| 04  | Карточка задачи (Task)        | `/task/:id`           | P0            |
+| 05  | Добавить растение (Add Plant) | `/plant/new`          | P0            |
+| 06  | История (History)             | `/plant/:id/history`  | P1            |
+| 07  | Фото / диагностика (Photo)    | `/plant/:id/diagnose` | P1 (заглушка) |
+| 08  | Настройки (Settings)          | `/settings`           | P1            |
 
 Нижняя навигация (bottom navigation): **Сегодня · Сад · Настройки**. Экраны 03–07 открываются поверх как дочерние маршруты.
 
@@ -145,14 +145,14 @@ HttpGardenRepository   ← этап 2, замена без правок UI
 
 **Поля:**
 
-| Поле | Тип | Обязательность |
-|---|---|---|
-| Культура | Выбор из справочника (поиск + эмодзи): яблоня, груша, вишня, слива, смородина, малина… | Обязательно |
-| Сорт | Текст с автоподсказками по культуре | Необязательно |
-| Возраст / год посадки | Число или год | Необязательно |
-| Место в саду | Короткий текст («у забора», «ряд 2») | Необязательно |
-| Количество | Число (по умолчанию 1) | Необязательно |
-| Свое название | Текст («Яблоня у калитки») | Необязательно |
+| Поле                  | Тип                                                                                    | Обязательность |
+| --------------------- | -------------------------------------------------------------------------------------- | -------------- |
+| Культура              | Выбор из справочника (поиск + эмодзи): яблоня, груша, вишня, слива, смородина, малина… | Обязательно    |
+| Сорт                  | Текст с автоподсказками по культуре                                                    | Необязательно  |
+| Возраст / год посадки | Число или год                                                                          | Необязательно  |
+| Место в саду          | Короткий текст («у забора», «ряд 2»)                                                   | Необязательно  |
+| Количество            | Число (по умолчанию 1)                                                                 | Необязательно  |
+| Свое название         | Текст («Яблоня у калитки»)                                                             | Необязательно  |
 
 **Поведение после сохранения:** растение появляется в саду, для него генерируются задачи (в MVP — из мок-правил по культуре и текущей дате), переход на экран 03 нового растения с подтверждением «Растение добавлено, появились задачи ухода».
 
@@ -189,57 +189,58 @@ HttpGardenRepository   ← этап 2, замена без правок UI
 ```typescript
 // Растение в саду пользователя
 interface Plant {
-  id: string
-  cultureId: string        // ссылка на справочник культур
-  variety?: string         // сорт
-  customName?: string      // "Яблоня у калитки"
-  plantedYear?: number
-  locationNote?: string    // "у забора"
-  quantity: number
-  photoUrl?: string
-  createdAt: string
+  id: string;
+  cultureId: string; // ссылка на справочник культур
+  variety?: string; // сорт
+  customName?: string; // "Яблоня у калитки"
+  plantedYear?: number;
+  locationNote?: string; // "у забора"
+  quantity: number;
+  photoUrl?: string;
+  createdAt: string;
 }
 
 // Справочник культур (предзаполнен)
 interface Culture {
-  id: string               // "apple", "pear", "cherry"...
-  name: string             // "Яблоня"
-  emoji: string            // "🍎"
-  category: 'tree' | 'bush' | 'berry' | 'flower'
-  commonVarieties: string[]
+  id: string; // "apple", "pear", "cherry"...
+  name: string; // "Яблоня"
+  emoji: string; // "🍎"
+  category: 'tree' | 'bush' | 'berry' | 'flower';
+  commonVarieties: string[];
 }
 
 // Задача ухода
 interface Task {
-  id: string
-  plantId: string
-  type: 'pruning' | 'feeding' | 'treatment' | 'watering' | 'inspection' | 'other'
-  title: string            // "Обрезать яблоню"
-  reason: string           // "Почему сейчас" — ключевое поле продукта
-  instructions: string[]   // шаги "Как сделать"
-  warning?: string         // "Через 2 дня похолодание"
-  dueDate: string          // целевая дата
-  dueWindow: number        // допустимое окно в днях (±)
-  status: 'pending' | 'done' | 'skipped' | 'postponed'
-  completedAt?: string
+  id: string;
+  plantId: string;
+  type:
+    'pruning' | 'feeding' | 'treatment' | 'watering' | 'inspection' | 'other';
+  title: string; // "Обрезать яблоню"
+  reason: string; // "Почему сейчас" — ключевое поле продукта
+  instructions: string[]; // шаги "Как сделать"
+  warning?: string; // "Через 2 дня похолодание"
+  dueDate: string; // целевая дата
+  dueWindow: number; // допустимое окно в днях (±)
+  status: 'pending' | 'done' | 'skipped' | 'postponed';
+  completedAt?: string;
 }
 
 // Событие истории ухода
 interface CareEvent {
-  id: string
-  plantId: string
-  taskId?: string          // если событие порождено задачей
-  type: string
-  note?: string
-  photoUrl?: string
-  createdAt: string
+  id: string;
+  plantId: string;
+  taskId?: string; // если событие порождено задачей
+  type: string;
+  note?: string;
+  photoUrl?: string;
+  createdAt: string;
 }
 
 // Настройки / профиль
 interface Settings {
-  region: string           // "Подмосковье" и т.п.
-  notificationsEnabled: boolean
-  notificationTime: string // "08:00"
+  region: string; // "Подмосковье" и т.п.
+  notificationsEnabled: boolean;
+  notificationTime: string; // "08:00"
 }
 ```
 
@@ -250,27 +251,27 @@ interface Settings {
 ```typescript
 interface GardenRepository {
   // Сад
-  getPlants(): Promise<Plant[]>
-  getPlant(id: string): Promise<Plant | null>
-  addPlant(input: NewPlantInput): Promise<Plant>
-  updatePlant(id: string, patch: Partial<Plant>): Promise<void>
-  removePlant(id: string): Promise<void>
+  getPlants(): Promise<Plant[]>;
+  getPlant(id: string): Promise<Plant | null>;
+  addPlant(input: NewPlantInput): Promise<Plant>;
+  updatePlant(id: string, patch: Partial<Plant>): Promise<void>;
+  removePlant(id: string): Promise<void>;
 
   // Задачи
-  getTodayTasks(): Promise<Task[]>
-  getTasksByPlant(plantId: string): Promise<Task[]>
-  completeTask(taskId: string): Promise<void>
-  postponeTask(taskId: string, days: number): Promise<void>
-  skipTask(taskId: string): Promise<void>
+  getTodayTasks(): Promise<Task[]>;
+  getTasksByPlant(plantId: string): Promise<Task[]>;
+  completeTask(taskId: string): Promise<void>;
+  postponeTask(taskId: string, days: number): Promise<void>;
+  skipTask(taskId: string): Promise<void>;
 
   // История
-  getHistory(plantId: string): Promise<CareEvent[]>
-  addCareEvent(input: NewCareEventInput): Promise<CareEvent>
+  getHistory(plantId: string): Promise<CareEvent[]>;
+  addCareEvent(input: NewCareEventInput): Promise<CareEvent>;
 
   // Справочник и настройки
-  getCultures(): Promise<Culture[]>
-  getSettings(): Promise<Settings>
-  updateSettings(patch: Partial<Settings>): Promise<void>
+  getCultures(): Promise<Culture[]>;
+  getSettings(): Promise<Settings>;
+  updateSettings(patch: Partial<Settings>): Promise<void>;
 }
 ```
 
