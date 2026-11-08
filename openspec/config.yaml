@@ -1,0 +1,49 @@
+schema: spec-driven
+
+context: |
+  Перед созданием или пересмотром артефактов, apply и archive прочитай openspec/constitution.md и соблюдай её принципы.
+  Пиши артефакты на русском языке.
+  Продуктовое видение находится в docs/personal-agronom-mvp.md; не дублируй его в артефактах.
+
+rules:
+  tasks:
+    - Включай проверяемые задачи для quality gates, требуемых openspec/constitution.md.
+
+operations:
+  apply:
+    guidance:
+      - Перед завершением change выполни quality gates из openspec/constitution.md и сообщи фактические результаты.
+  archive:
+    guidance:
+      - Не архивируй change с незавершёнными задачами или непройденными quality gates.
+
+# Project context (optional)
+# Add only constraints that should guide OpenSpec artifacts and workflows.
+# Include constraints an agent cannot infer by reading the code.
+# Keep general project documentation and discoverable codebase facts out.
+# Example:
+#   context: |
+#     Designs and tasks must cover Windows, macOS, and Linux
+#     Write all artifacts in Spanish
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always state what is out of scope
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing

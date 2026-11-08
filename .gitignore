@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Nuxt and build output
+.nuxt/
+.output/
+.data/
+dist/
+
+# Tests and cache
+coverage/
+.cache/
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# OS and editors
+.DS_Store
+.vscode/
+.idea/
