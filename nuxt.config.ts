@@ -6,6 +6,9 @@ export default defineNuxtConfig({
     'vuetify-nuxt-module',
   ],
   ssr: false,
+  devtools: {
+    enabled: false,
+  },
   css: ['@mdi/font/css/materialdesignicons.css'],
   app: {
     head: {
@@ -55,4 +58,4 @@ export default defineNuxtConfig({
       },
     },
   },
-})
+});

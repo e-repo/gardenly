@@ -14,9 +14,28 @@ Nuxt 4 · Vue 3 · TypeScript · SPA · Vuetify 3 · Pinia. На первом э
 - Активные изменения: `openspec/changes/`
 - Спецификации реализованной системы: `openspec/specs/`
 
+## Запуск и проверки
+
+```bash
+npm install
+npm run dev
+```
+
+Обязательные проверки качества:
+
+```bash
+npm run lint
+npm run format:check
+npm run typecheck
+npm run test
+npm run build
+```
+
+Pre-commit hook ограничивает обычный коммит 40 файлами. Только для инициализации репозитория можно явно установить `GARDENLY_ALLOW_LARGE_INIT_COMMIT=1`; для обычных коммитов изменения следует разделять.
+
 ## Текущий статус
 
-Приложение ещё не реализовано. Подготовлен change `bootstrap-app`: каркас Nuxt, основная навигация, feature-first архитектура, ESLint, Vitest и обязательные проверки качества.
+Реализован мобильный каркас Nuxt с русской локалью, тремя основными разделами и нижней навигацией. Настроены feature-first структура, ESLint, Prettier, Vitest и обязательные проверки качества.
 
 Полезные команды OpenSpec:
 
@@ -25,3 +44,25 @@ openspec list
 openspec status --change bootstrap-app
 openspec validate bootstrap-app --strict
 ```
+
+## Проверка мобильного интерфейса
+
+### Chrome DevTools
+
+Для ежедневной проверки использовать **Chrome DevTools → Toggle device toolbar / Device Toolbar** и задавать ширину 390 px. Это подходит для вёрстки, touch-событий и общего mobile layout, но не является эмуляцией Android или WebView.
+
+### Реальный телефон без APK
+
+Запустить dev-сервер с доступом из локальной сети:
+
+```bash
+npm run dev -- --host 0.0.0.0
+```
+
+На телефоне, подключённом к той же Wi-Fi сети, открыть в Chrome `http://<IP-компьютера>:3000`.
+
+### Android-эмулятор
+
+Для полноценной проверки Android использовать **Android Studio → Device Manager** и создать или запустить виртуальное устройство. В Chrome эмулятора открыть `http://10.0.2.2:3000`: этот адрес указывает на компьютер, где запущен dev-сервер.
+
+Расширение VS Code не требуется: оно в основном запускает тот же Android-эмулятор. Для текущего Nuxt SPA достаточно Chrome и реального телефона по Wi-Fi, а Android Studio нужен при полноценной проверке Android. После добавления Capacitor нативную оболочку можно будет запускать из Android Studio кнопкой **Run**, без ручной установки APK.
