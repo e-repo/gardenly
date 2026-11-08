@@ -33,6 +33,9 @@ export default defineNuxtConfig({
     langDir: 'locales',
   },
   vuetify: {
+    moduleOptions: {
+      importComposables: false,
+    },
     vuetifyOptions: {
       theme: {
         defaultTheme: 'gardenlyLight',
