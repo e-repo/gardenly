@@ -1,0 +1,18 @@
+{
+  "navigation": {
+    "today": "Сегодня",
+    "garden": "Сад",
+    "settings": "Настройки"
+  },
+  "pages": {
+    "today": {
+      "title": "Сегодня"
+    },
+    "garden": {
+      "title": "Мой сад"
+    },
+    "settings": {
+      "title": "Настройки"
+    }
+  }
+}
