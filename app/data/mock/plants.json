@@ -1,0 +1,37 @@
+[
+  {
+    "id": "apple-antonovka",
+    "cultureId": "apple",
+    "variety": "Антоновка",
+    "plantedYear": 2018,
+    "locationNote": "у забора",
+    "quantity": 1,
+    "createdAt": "2026-01-15T09:00:00Z"
+  },
+  {
+    "id": "pear-lada",
+    "cultureId": "pear",
+    "variety": "Лада",
+    "plantedYear": 2021,
+    "locationNote": "рядом с яблоней",
+    "quantity": 1,
+    "createdAt": "2026-01-15T09:05:00Z"
+  },
+  {
+    "id": "cherry-molodezhnaya",
+    "cultureId": "cherry",
+    "variety": "Молодёжная",
+    "plantedYear": 2020,
+    "locationNote": "у калитки",
+    "quantity": 1,
+    "createdAt": "2026-01-15T09:10:00Z"
+  },
+  {
+    "id": "black-currant",
+    "cultureId": "black-currant",
+    "plantedYear": 2023,
+    "locationNote": "ряд 2",
+    "quantity": 3,
+    "createdAt": "2026-01-15T09:15:00Z"
+  }
+]

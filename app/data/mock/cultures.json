@@ -1,0 +1,30 @@
+[
+  {
+    "id": "apple",
+    "name": "Яблоня",
+    "emoji": "🍎",
+    "category": "tree",
+    "commonVarieties": ["Антоновка", "Мельба", "Спартак"]
+  },
+  {
+    "id": "pear",
+    "name": "Груша",
+    "emoji": "🍐",
+    "category": "tree",
+    "commonVarieties": ["Лада", "Кафедральная", "Чижовская"]
+  },
+  {
+    "id": "cherry",
+    "name": "Вишня",
+    "emoji": "🍒",
+    "category": "tree",
+    "commonVarieties": ["Молодёжная", "Шоколадница", "Тургеневка"]
+  },
+  {
+    "id": "black-currant",
+    "name": "Смородина чёрная",
+    "emoji": "🫐",
+    "category": "bush",
+    "commonVarieties": ["Добрыня", "Селеченская", "Перун"]
+  }
+]
