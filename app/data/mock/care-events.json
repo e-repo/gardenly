@@ -1,0 +1,33 @@
+[
+  {
+    "id": "dacha-inspection-2026-05-10",
+    "plotId": "dacha",
+    "plantId": "cherry-molodezhnaya",
+    "type": "inspection",
+    "performedAt": "2026-05-10T08:30:00Z",
+    "note": "Повреждений и признаков болезни не обнаружено.",
+    "createdAt": "2026-05-10T08:35:00Z"
+  },
+  {
+    "id": "dacha-treatment-2026-04-20",
+    "plotId": "dacha",
+    "plantId": "apple-antonovka",
+    "taskId": "apple-spring-treatment",
+    "type": "treatment",
+    "performedAt": "2026-04-20T07:45:00Z",
+    "productName": "Скор",
+    "dosage": "2 мл на 10 л воды",
+    "note": "Обработка до раскрытия почек.",
+    "createdAt": "2026-04-20T08:00:00Z"
+  },
+  {
+    "id": "dacha-manual-treatment-2026-04-05",
+    "plotId": "dacha",
+    "type": "treatment",
+    "performedAt": "2026-04-05T09:15:00Z",
+    "productName": "Скор",
+    "dosage": "2 мл на 10 л воды",
+    "note": "Ручная запись об обработке без плановой задачи.",
+    "createdAt": "2026-04-05T09:20:00Z"
+  }
+]

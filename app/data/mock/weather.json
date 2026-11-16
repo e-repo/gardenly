@@ -1,4 +1,10 @@
 {
-  "temperature": 18,
-  "condition": "partly-cloudy"
+  "dacha": {
+    "temperature": 18,
+    "condition": "partly-cloudy"
+  },
+  "home": {
+    "temperature": 16,
+    "condition": "cloudy"
+  }
 }

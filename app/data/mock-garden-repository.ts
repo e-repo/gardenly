@@ -1,13 +1,17 @@
 import type {
+  CareEvent,
   Culture,
   GardenRepository,
   Plant,
+  Plot,
   Settings,
   Task,
   WeatherForecast,
 } from '~/domain/garden';
+import careEventsData from './mock/care-events.json';
 import culturesData from './mock/cultures.json';
 import plantsData from './mock/plants.json';
+import plotsData from './mock/plots.json';
 import settingsData from './mock/settings.json';
 import tasksData from './mock/tasks.json';
 import weatherData from './mock/weather.json';
@@ -17,11 +21,17 @@ type MockTask = Omit<Task, 'dueDate' | 'completedAt'> & {
   completedToday?: boolean;
 };
 
+const plots = plotsData as Plot[];
 const plants = plantsData as Plant[];
 const cultures = culturesData as Culture[];
+const careEvents = careEventsData as CareEvent[];
 const tasks = tasksData as MockTask[];
 const settings = settingsData;
-const weather = weatherData as WeatherForecast;
+const weatherByPlot = weatherData as {
+  dacha: WeatherForecast;
+  home: WeatherForecast;
+  [plotId: string]: WeatherForecast | undefined;
+};
 
 function formatLocalDate(date: Date): string {
   const year = String(date.getFullYear());
@@ -45,6 +55,10 @@ function formatUtcDateTime(date: Date): string {
 export class MockGardenRepository implements GardenRepository {
   constructor(private readonly now: () => Date = () => new Date()) {}
 
+  getPlots(): Promise<Plot[]> {
+    return Promise.resolve(structuredClone(plots));
+  }
+
   getPlants(): Promise<Plant[]> {
     return Promise.resolve(structuredClone(plants));
   }
@@ -53,6 +67,12 @@ export class MockGardenRepository implements GardenRepository {
     const plant = plants.find((candidate) => candidate.id === id);
 
     return Promise.resolve(plant ? structuredClone(plant) : null);
+  }
+
+  getPlantsByPlot(plotId: string): Promise<Plant[]> {
+    const plotPlants = plants.filter((plant) => plant.plotId === plotId);
+
+    return Promise.resolve(structuredClone(plotPlants));
   }
 
   getTodayTasks(): Promise<Task[]> {
@@ -83,8 +103,24 @@ export class MockGardenRepository implements GardenRepository {
     return Promise.resolve(structuredClone(settings));
   }
 
+  getCurrentWeather(plotId: string): Promise<WeatherForecast | null> {
+    const weather = weatherByPlot[plotId];
+
+    return Promise.resolve(weather ? structuredClone(weather) : null);
+  }
+
   getTodayWeather(): Promise<WeatherForecast> {
-    return Promise.resolve(structuredClone(weather));
+    return Promise.resolve(structuredClone(weatherByPlot.dacha));
+  }
+
+  getCareEvents(plotId: string): Promise<CareEvent[]> {
+    const plotCareEvents = careEvents
+      .filter((event) => event.plotId === plotId)
+      .sort((first, second) =>
+        second.performedAt.localeCompare(first.performedAt),
+      );
+
+    return Promise.resolve(structuredClone(plotCareEvents));
   }
 
   private mapTasks(now: Date): Task[] {

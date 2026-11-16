@@ -1,5 +1,6 @@
 [
   {
+    "plotId": "dacha",
     "id": "apple-antonovka",
     "cultureId": "apple",
     "variety": "Антоновка",
@@ -9,6 +10,7 @@
     "createdAt": "2026-01-15T09:00:00Z"
   },
   {
+    "plotId": "dacha",
     "id": "pear-lada",
     "cultureId": "pear",
     "variety": "Лада",
@@ -18,6 +20,7 @@
     "createdAt": "2026-01-15T09:05:00Z"
   },
   {
+    "plotId": "dacha",
     "id": "cherry-molodezhnaya",
     "cultureId": "cherry",
     "variety": "Молодёжная",
@@ -27,6 +30,7 @@
     "createdAt": "2026-01-15T09:10:00Z"
   },
   {
+    "plotId": "dacha",
     "id": "black-currant",
     "cultureId": "black-currant",
     "plantedYear": 2023,

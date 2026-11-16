@@ -1,5 +1,12 @@
+export interface Plot {
+  id: string;
+  name: string;
+  locationLabel: string;
+}
+
 export interface Plant {
   id: string;
+  plotId: string;
   cultureId: string;
   variety?: string;
   customName?: string;
@@ -18,11 +25,33 @@ export interface Culture {
   commonVarieties: string[];
 }
 
+export type CareWorkType =
+  | 'pruning'
+  | 'feeding'
+  | 'treatment'
+  | 'watering'
+  | 'inspection'
+  | 'transplanting'
+  | 'other';
+
+export interface CareEvent {
+  id: string;
+  plotId: string;
+  plantId?: string;
+  taskId?: string;
+  type: CareWorkType;
+  performedAt: string;
+  productName?: string;
+  dosage?: string;
+  note?: string;
+  photoUrl?: string;
+  createdAt: string;
+}
+
 export interface Task {
   id: string;
   plantId: string;
-  type:
-    'pruning' | 'feeding' | 'treatment' | 'watering' | 'inspection' | 'other';
+  type: CareWorkType;
   title: string;
   reason: string;
   instructions: string[];
@@ -45,11 +74,15 @@ export interface WeatherForecast {
 }
 
 export interface GardenRepository {
+  getPlots(): Promise<Plot[]>;
   getPlants(): Promise<Plant[]>;
   getPlant(id: string): Promise<Plant | null>;
+  getPlantsByPlot(plotId: string): Promise<Plant[]>;
   getTodayTasks(): Promise<Task[]>;
   getTasksByPlant(plantId: string): Promise<Task[]>;
   getCultures(): Promise<Culture[]>;
   getSettings(): Promise<Settings>;
+  getCurrentWeather(plotId: string): Promise<WeatherForecast | null>;
   getTodayWeather(): Promise<WeatherForecast>;
+  getCareEvents(plotId: string): Promise<CareEvent[]>;
 }

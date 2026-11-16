@@ -13,8 +13,17 @@ describe('MockGardenRepository', () => {
 
     expect(
       plants.map(
-        ({ id, cultureId, variety, plantedYear, locationNote, quantity }) => ({
+        ({
           id,
+          plotId,
+          cultureId,
+          variety,
+          plantedYear,
+          locationNote,
+          quantity,
+        }) => ({
+          id,
+          plotId,
           cultureId,
           variety,
           plantedYear,
@@ -25,6 +34,7 @@ describe('MockGardenRepository', () => {
     ).toEqual([
       {
         id: 'apple-antonovka',
+        plotId: 'dacha',
         cultureId: 'apple',
         variety: 'Антоновка',
         plantedYear: 2018,
@@ -33,6 +43,7 @@ describe('MockGardenRepository', () => {
       },
       {
         id: 'pear-lada',
+        plotId: 'dacha',
         cultureId: 'pear',
         variety: 'Лада',
         plantedYear: 2021,
@@ -41,6 +52,7 @@ describe('MockGardenRepository', () => {
       },
       {
         id: 'cherry-molodezhnaya',
+        plotId: 'dacha',
         cultureId: 'cherry',
         variety: 'Молодёжная',
         plantedYear: 2020,
@@ -49,6 +61,7 @@ describe('MockGardenRepository', () => {
       },
       {
         id: 'black-currant',
+        plotId: 'dacha',
         cultureId: 'black-currant',
         variety: undefined,
         plantedYear: 2023,
@@ -229,5 +242,137 @@ describe('MockGardenRepository', () => {
     ).toBe(true);
     expect((await repository.getSettings()).region).toBe('Подмосковье');
     expect((await repository.getTodayWeather()).temperature).toBe(18);
+  });
+
+  it('returns plots with distinct locations', async () => {
+    const repository = createRepository(new Date(2026, 4, 10, 9, 30));
+
+    await expect(repository.getPlots()).resolves.toEqual([
+      {
+        id: 'dacha',
+        name: 'Дача',
+        locationLabel: 'Новая Усмань',
+      },
+      {
+        id: 'home',
+        name: 'Дом',
+        locationLabel: 'Воронеж, Железнодорожный район',
+      },
+    ]);
+  });
+
+  it('returns all and only plants belonging to the requested plot', async () => {
+    const repository = createRepository(new Date(2026, 4, 10, 9, 30));
+
+    const plants = await repository.getPlantsByPlot('dacha');
+
+    expect(plants.map((plant) => plant.id)).toEqual([
+      'apple-antonovka',
+      'pear-lada',
+      'cherry-molodezhnaya',
+      'black-currant',
+    ]);
+    expect(plants.every((plant) => plant.plotId === 'dacha')).toBe(true);
+    await expect(repository.getPlantsByPlot('home')).resolves.toEqual([]);
+    await expect(repository.getPlantsByPlot('missing-plot')).resolves.toEqual(
+      [],
+    );
+  });
+
+  it('returns weather for each plot and null for an unknown id', async () => {
+    const repository = createRepository(new Date(2026, 4, 10, 9, 30));
+
+    await expect(repository.getCurrentWeather('dacha')).resolves.toEqual({
+      temperature: 18,
+      condition: 'partly-cloudy',
+    });
+    await expect(repository.getCurrentWeather('home')).resolves.toEqual({
+      temperature: 16,
+      condition: 'cloudy',
+    });
+    await expect(
+      repository.getCurrentWeather('missing-plot'),
+    ).resolves.toBeNull();
+  });
+
+  it('returns plot care events newest first with treatment details', async () => {
+    const repository = createRepository(new Date(2026, 4, 10, 9, 30));
+
+    const careEvents = await repository.getCareEvents('dacha');
+
+    expect(careEvents.map((event) => event.id)).toEqual([
+      'dacha-inspection-2026-05-10',
+      'dacha-treatment-2026-04-20',
+      'dacha-manual-treatment-2026-04-05',
+    ]);
+    expect(careEvents.every((event) => event.plotId === 'dacha')).toBe(true);
+
+    const treatment = careEvents.find(
+      (event) => event.id === 'dacha-treatment-2026-04-20',
+    );
+    expect(treatment).toMatchObject({
+      plantId: 'apple-antonovka',
+      taskId: 'apple-spring-treatment',
+      type: 'treatment',
+      performedAt: '2026-04-20T07:45:00Z',
+      productName: 'Скор',
+      dosage: '2 мл на 10 л воды',
+      createdAt: '2026-04-20T08:00:00Z',
+    });
+    await expect(repository.getCareEvents('missing-plot')).resolves.toEqual([]);
+  });
+
+  it('returns a manual treatment without a task id', async () => {
+    const repository = createRepository(new Date(2026, 4, 10, 9, 30));
+
+    const careEvents = await repository.getCareEvents('dacha');
+    const manualEvent = careEvents.find(
+      (event) => event.id === 'dacha-manual-treatment-2026-04-05',
+    );
+
+    expect(manualEvent).toMatchObject({
+      type: 'treatment',
+      performedAt: '2026-04-05T09:15:00Z',
+      productName: 'Скор',
+      dosage: '2 мл на 10 л воды',
+    });
+    expect(manualEvent?.taskId).toBeUndefined();
+  });
+
+  it('returns independent snapshots for plot read methods', async () => {
+    const repository = createRepository(new Date(2026, 4, 10, 9, 30));
+
+    const plots = await repository.getPlots();
+    const plants = await repository.getPlantsByPlot('dacha');
+    const weather = await repository.getCurrentWeather('dacha');
+    const careEvents = await repository.getCareEvents('dacha');
+
+    plots.forEach((plot) => {
+      plot.locationLabel = 'изменено';
+    });
+    plants.forEach((plant) => {
+      plant.quantity = 99;
+    });
+    if (weather) {
+      weather.temperature = -50;
+    }
+    careEvents.forEach((event) => {
+      event.note = 'изменено';
+    });
+
+    expect(
+      (await repository.getPlots()).map((plot) => plot.locationLabel),
+    ).toEqual(['Новая Усмань', 'Воронеж, Железнодорожный район']);
+    expect(
+      (await repository.getPlantsByPlot('dacha')).map(
+        (plant) => plant.quantity,
+      ),
+    ).toEqual([1, 1, 1, 3]);
+    expect((await repository.getCurrentWeather('dacha'))?.temperature).toBe(18);
+    expect(
+      (await repository.getCareEvents('dacha')).some(
+        (event) => event.note === 'изменено',
+      ),
+    ).toBe(false);
   });
 });
