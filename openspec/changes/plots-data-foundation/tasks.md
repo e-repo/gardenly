@@ -6,7 +6,8 @@
 
 ## 2. Read-only контракт участков
 
-- [x] 2.1 Реализовать `getPlots()`, `getPlantsByPlot()`, `getCurrentWeather()` и `getCareEvents()` в `MockGardenRepository`, сохранив прежние методы и переведя `getTodayWeather()` на погоду дачи. Добавить unit-тесты состава участков, фильтрации и пустого участка, погоды и неизвестного id, порядка и содержимого истории, ручного события и независимости snapshots. Проверка: новые и существующие тесты проходят, typecheck успешен, UI не импортирует `data/` напрямую.
+- [x] 2.1 Реализовать `getPlots()`, `getPlantsByPlot()`, `getCurrentWeather()` и `getCareEvents()` в `MockGardenRepository`. Добавить unit-тесты состава участков, фильтрации и пустого участка, погоды и неизвестного id, порядка и содержимого истории, ручного события и независимости snapshots. Проверка: новые и существующие тесты проходят, typecheck успешен, UI не импортирует `data/` напрямую.
+- [x] 2.2 Удалить legacy-контракт: методы `getPlants()`, `getTodayTasks()`, `getTasksByPlant()`, `getTodayWeather()` и `getSettings()`, типы `Task` и `Settings`, файлы `mock/tasks.json` и `mock/settings.json` и связанные тесты и вспомогательный код. `getPlant()` и `getCultures()` сохраняются; `CareEvent.taskId` остаётся необязательной строкой. Проверка: поиск не находит обращений к удалённым символам и файлам, оставшиеся тесты и `npm run typecheck` проходят.
 
 ## 3. Интеграционная проверка
 

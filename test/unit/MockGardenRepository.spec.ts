@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { MockGardenRepository } from '~/data/mock-garden-repository';
 
-function createRepository(now: Date) {
-  return new MockGardenRepository(() => new Date(now));
+function createRepository() {
+  return new MockGardenRepository();
 }
 
 describe('MockGardenRepository', () => {
   it('returns the initial garden with plant details', async () => {
-    const repository = createRepository(new Date(2026, 4, 10, 9, 30));
+    const repository = createRepository();
 
-    const plants = await repository.getPlants();
+    const plants = await repository.getPlantsByPlot('dacha');
 
     expect(
       plants.map(
@@ -72,7 +72,7 @@ describe('MockGardenRepository', () => {
   });
 
   it('returns a known plant and null for an unknown id', async () => {
-    const repository = createRepository(new Date(2026, 4, 10, 9, 30));
+    const repository = createRepository();
 
     const plant = await repository.getPlant('pear-lada');
 
@@ -81,89 +81,8 @@ describe('MockGardenRepository', () => {
     await expect(repository.getPlant('missing-plant')).resolves.toBeNull();
   });
 
-  it.each([
-    {
-      now: new Date(2026, 4, 10, 9, 30, 15, 987),
-      today: '2026-05-10',
-    },
-    {
-      now: new Date(2027, 10, 3, 23, 45, 59, 999),
-      today: '2027-11-03',
-    },
-  ])(
-    'uses the injected local date $today for relative tasks',
-    async ({ now, today }) => {
-      const repository = createRepository(now);
-
-      const todayTasks = await repository.getTodayTasks();
-
-      expect(todayTasks.map((task) => task.id)).toEqual([
-        'apple-spring-treatment',
-        'pear-spring-feeding',
-        'apple-formative-pruning',
-        'currant-old-growth-inspection',
-      ]);
-
-      const pendingTasks = todayTasks.filter(
-        (task) => task.status === 'pending',
-      );
-      expect(pendingTasks).toHaveLength(2);
-      expect(pendingTasks.map((task) => task.dueDate)).toEqual([today, today]);
-
-      const completedTasks = todayTasks.filter(
-        (task) => task.status === 'done',
-      );
-      const expectedCompletedAt = now.toISOString().replace(/\.\d{3}Z$/, 'Z');
-      expect(completedTasks).toHaveLength(2);
-      expect(completedTasks.map((task) => task.completedAt)).toEqual([
-        expectedCompletedAt,
-        expectedCompletedAt,
-      ]);
-      expect(expectedCompletedAt).toMatch(
-        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/,
-      );
-      expect(todayTasks.some((task) => task.id === 'currant-watering')).toBe(
-        false,
-      );
-      expect(todayTasks.some((task) => task.id === 'cherry-inspection')).toBe(
-        false,
-      );
-    },
-  );
-
-  it('provides reasons and instructions for recommendations', async () => {
-    const repository = createRepository(new Date(2026, 4, 10, 9, 30));
-
-    const todayTasks = await repository.getTodayTasks();
-
-    for (const task of todayTasks) {
-      expect(task.reason.length).toBeGreaterThan(0);
-      expect(task.instructions.length).toBeGreaterThanOrEqual(3);
-      expect(task.dueWindow).toBeGreaterThan(0);
-    }
-  });
-
-  it('returns all and only tasks belonging to the requested plant', async () => {
-    const repository = createRepository(new Date(2026, 4, 10, 9, 30));
-
-    const tasks = await repository.getTasksByPlant('black-currant');
-
-    expect(tasks.map((task) => task.id)).toEqual([
-      'currant-watering',
-      'currant-old-growth-inspection',
-    ]);
-    expect(tasks.every((task) => task.plantId === 'black-currant')).toBe(true);
-    expect(tasks.map((task) => task.dueDate)).toEqual([
-      '2026-05-11',
-      '2026-05-08',
-    ]);
-    await expect(repository.getTasksByPlant('missing-plant')).resolves.toEqual(
-      [],
-    );
-  });
-
-  it('returns cultures, settings and static weather', async () => {
-    const repository = createRepository(new Date(2026, 4, 10, 9, 30));
+  it('returns the culture catalog', async () => {
+    const repository = createRepository();
 
     const cultures = await repository.getCultures();
 
@@ -179,73 +98,61 @@ describe('MockGardenRepository', () => {
       'Вишня',
       'Смородина чёрная',
     ]);
-    await expect(repository.getSettings()).resolves.toEqual({
-      region: 'Подмосковье',
-      notificationsEnabled: true,
-      notificationTime: '08:00',
-    });
-    await expect(repository.getTodayWeather()).resolves.toEqual({
-      temperature: 18,
-      condition: 'partly-cloudy',
-    });
   });
 
   it('returns independent snapshots for every read method', async () => {
-    const repository = createRepository(new Date(2026, 4, 10, 9, 30));
+    const repository = createRepository();
 
-    const plants = await repository.getPlants();
+    const plots = await repository.getPlots();
     const plant = await repository.getPlant('apple-antonovka');
-    const todayTasks = await repository.getTodayTasks();
-    const plantTasks = await repository.getTasksByPlant('black-currant');
+    const plants = await repository.getPlantsByPlot('dacha');
     const cultures = await repository.getCultures();
-    const settings = await repository.getSettings();
-    const weather = await repository.getTodayWeather();
+    const weather = await repository.getCurrentWeather('dacha');
+    const careEvents = await repository.getCareEvents('dacha');
 
-    plants.forEach((item) => {
-      item.quantity = 99;
+    plots.forEach((plot) => {
+      plot.locationLabel = 'изменено';
     });
     if (plant) {
       plant.locationNote = 'изменено';
     }
-    todayTasks.forEach((task) => {
-      task.instructions = [];
-    });
-    plantTasks.forEach((task) => {
-      task.title = 'изменено';
+    plants.forEach((item) => {
+      item.quantity = 99;
     });
     cultures.forEach((culture) => {
       culture.commonVarieties = [];
     });
-    settings.region = 'изменено';
-    weather.temperature = -50;
+    if (weather) {
+      weather.temperature = -50;
+    }
+    careEvents.forEach((event) => {
+      event.note = 'изменено';
+    });
 
-    expect((await repository.getPlants()).map((item) => item.quantity)).toEqual(
-      [1, 1, 1, 3],
-    );
+    expect(
+      (await repository.getPlots()).map((plot) => plot.locationLabel),
+    ).toEqual(['Новая Усмань', 'Воронеж, Железнодорожный район']);
     expect((await repository.getPlant('apple-antonovka'))?.locationNote).toBe(
       'у забора',
     );
     expect(
-      (await repository.getTodayTasks()).every(
-        (task) => task.instructions.length > 0,
-      ),
-    ).toBe(true);
-    expect(
-      (await repository.getTasksByPlant('black-currant')).map(
-        (task) => task.title,
-      ),
-    ).toEqual(['Полить смородину', 'Осмотреть прошлогодние побеги смородины']);
+      (await repository.getPlantsByPlot('dacha')).map((item) => item.quantity),
+    ).toEqual([1, 1, 1, 3]);
     expect(
       (await repository.getCultures()).every(
         (culture) => culture.commonVarieties.length > 0,
       ),
     ).toBe(true);
-    expect((await repository.getSettings()).region).toBe('Подмосковье');
-    expect((await repository.getTodayWeather()).temperature).toBe(18);
+    expect((await repository.getCurrentWeather('dacha'))?.temperature).toBe(18);
+    expect(
+      (await repository.getCareEvents('dacha')).some(
+        (event) => event.note === 'изменено',
+      ),
+    ).toBe(false);
   });
 
   it('returns plots with distinct locations', async () => {
-    const repository = createRepository(new Date(2026, 4, 10, 9, 30));
+    const repository = createRepository();
 
     await expect(repository.getPlots()).resolves.toEqual([
       {
@@ -262,7 +169,7 @@ describe('MockGardenRepository', () => {
   });
 
   it('returns all and only plants belonging to the requested plot', async () => {
-    const repository = createRepository(new Date(2026, 4, 10, 9, 30));
+    const repository = createRepository();
 
     const plants = await repository.getPlantsByPlot('dacha');
 
@@ -280,7 +187,7 @@ describe('MockGardenRepository', () => {
   });
 
   it('returns weather for each plot and null for an unknown id', async () => {
-    const repository = createRepository(new Date(2026, 4, 10, 9, 30));
+    const repository = createRepository();
 
     await expect(repository.getCurrentWeather('dacha')).resolves.toEqual({
       temperature: 18,
@@ -296,7 +203,7 @@ describe('MockGardenRepository', () => {
   });
 
   it('returns plot care events newest first with treatment details', async () => {
-    const repository = createRepository(new Date(2026, 4, 10, 9, 30));
+    const repository = createRepository();
 
     const careEvents = await repository.getCareEvents('dacha');
 
@@ -323,7 +230,7 @@ describe('MockGardenRepository', () => {
   });
 
   it('returns a manual treatment without a task id', async () => {
-    const repository = createRepository(new Date(2026, 4, 10, 9, 30));
+    const repository = createRepository();
 
     const careEvents = await repository.getCareEvents('dacha');
     const manualEvent = careEvents.find(
@@ -337,42 +244,5 @@ describe('MockGardenRepository', () => {
       dosage: '2 мл на 10 л воды',
     });
     expect(manualEvent?.taskId).toBeUndefined();
-  });
-
-  it('returns independent snapshots for plot read methods', async () => {
-    const repository = createRepository(new Date(2026, 4, 10, 9, 30));
-
-    const plots = await repository.getPlots();
-    const plants = await repository.getPlantsByPlot('dacha');
-    const weather = await repository.getCurrentWeather('dacha');
-    const careEvents = await repository.getCareEvents('dacha');
-
-    plots.forEach((plot) => {
-      plot.locationLabel = 'изменено';
-    });
-    plants.forEach((plant) => {
-      plant.quantity = 99;
-    });
-    if (weather) {
-      weather.temperature = -50;
-    }
-    careEvents.forEach((event) => {
-      event.note = 'изменено';
-    });
-
-    expect(
-      (await repository.getPlots()).map((plot) => plot.locationLabel),
-    ).toEqual(['Новая Усмань', 'Воронеж, Железнодорожный район']);
-    expect(
-      (await repository.getPlantsByPlot('dacha')).map(
-        (plant) => plant.quantity,
-      ),
-    ).toEqual([1, 1, 1, 3]);
-    expect((await repository.getCurrentWeather('dacha'))?.temperature).toBe(18);
-    expect(
-      (await repository.getCareEvents('dacha')).some(
-        (event) => event.note === 'изменено',
-      ),
-    ).toBe(false);
   });
 });

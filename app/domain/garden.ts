@@ -48,26 +48,6 @@ export interface CareEvent {
   createdAt: string;
 }
 
-export interface Task {
-  id: string;
-  plantId: string;
-  type: CareWorkType;
-  title: string;
-  reason: string;
-  instructions: string[];
-  warning?: string;
-  dueDate: string;
-  dueWindow: number;
-  status: 'pending' | 'done' | 'skipped' | 'postponed';
-  completedAt?: string;
-}
-
-export interface Settings {
-  region: string;
-  notificationsEnabled: boolean;
-  notificationTime: string;
-}
-
 export interface WeatherForecast {
   temperature: number;
   condition: 'sunny' | 'partly-cloudy' | 'cloudy' | 'rain';
@@ -75,14 +55,9 @@ export interface WeatherForecast {
 
 export interface GardenRepository {
   getPlots(): Promise<Plot[]>;
-  getPlants(): Promise<Plant[]>;
   getPlant(id: string): Promise<Plant | null>;
   getPlantsByPlot(plotId: string): Promise<Plant[]>;
-  getTodayTasks(): Promise<Task[]>;
-  getTasksByPlant(plantId: string): Promise<Task[]>;
   getCultures(): Promise<Culture[]>;
-  getSettings(): Promise<Settings>;
   getCurrentWeather(plotId: string): Promise<WeatherForecast | null>;
-  getTodayWeather(): Promise<WeatherForecast>;
   getCareEvents(plotId: string): Promise<CareEvent[]>;
 }
