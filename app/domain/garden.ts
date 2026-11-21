@@ -4,6 +4,16 @@ export interface Plot {
   locationLabel: string;
 }
 
+export interface NewPlotInput {
+  name: string;
+  locationLabel: string;
+}
+
+export interface UserProfile {
+  id: string;
+  displayName: string;
+}
+
 export interface Plant {
   id: string;
   plotId: string;
@@ -20,7 +30,6 @@ export interface Plant {
 export interface Culture {
   id: string;
   name: string;
-  emoji: string;
   category: 'tree' | 'bush' | 'berry' | 'flower';
   commonVarieties: string[];
 }
@@ -54,7 +63,9 @@ export interface WeatherForecast {
 }
 
 export interface GardenRepository {
+  getProfile(): Promise<UserProfile>;
   getPlots(): Promise<Plot[]>;
+  createPlot(input: NewPlotInput): Promise<Plot>;
   getPlant(id: string): Promise<Plant | null>;
   getPlantsByPlot(plotId: string): Promise<Plant[]>;
   getCultures(): Promise<Culture[]>;

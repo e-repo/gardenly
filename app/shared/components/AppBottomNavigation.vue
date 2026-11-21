@@ -4,16 +4,20 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 
 const navigationItems = [
-  { to: '/', labelKey: 'navigation.today', icon: 'mdi-calendar-today' },
   {
     to: '/garden',
     labelKey: 'navigation.garden',
     icon: 'mdi-sprout-outline',
   },
   {
-    to: '/settings',
-    labelKey: 'navigation.settings',
-    icon: 'mdi-cog-outline',
+    to: '/tasks',
+    labelKey: 'navigation.tasks',
+    icon: 'mdi-clipboard-list-outline',
+  },
+  {
+    to: '/help',
+    labelKey: 'navigation.help',
+    icon: 'mdi-help-circle-outline',
   },
 ] as const;
 </script>

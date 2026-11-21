@@ -98,6 +98,7 @@ describe('MockGardenRepository', () => {
       'Вишня',
       'Смородина чёрная',
     ]);
+    expect(cultures.every((culture) => !('emoji' in culture))).toBe(true);
   });
 
   it('returns independent snapshots for every read method', async () => {
@@ -244,5 +245,99 @@ describe('MockGardenRepository', () => {
       dosage: '2 мл на 10 л воды',
     });
     expect(manualEvent?.taskId).toBeUndefined();
+  });
+
+  it('returns a stable mock user profile', async () => {
+    const repository = createRepository();
+
+    await expect(repository.getProfile()).resolves.toEqual({
+      id: 'user-evgeny',
+      displayName: 'Евгений',
+    });
+  });
+
+  it('creates a plot with normalized values and appends it last', async () => {
+    const repository = createRepository();
+
+    const created = await repository.createPlot({
+      name: '  Теплица  ',
+      locationLabel: ' Новая Усмань, за домом ',
+    });
+
+    expect(created).toEqual({
+      id: 'plot-1',
+      name: 'Теплица',
+      locationLabel: 'Новая Усмань, за домом',
+    });
+    expect((await repository.getPlots()).map((plot) => plot.id)).toEqual([
+      'dacha',
+      'home',
+      'plot-1',
+    ]);
+  });
+
+  it('assigns unique ids to repeatedly created plots', async () => {
+    const repository = createRepository();
+
+    const first = await repository.createPlot({
+      name: 'Теплица',
+      locationLabel: 'За домом',
+    });
+    const second = await repository.createPlot({
+      name: 'Балкон',
+      locationLabel: 'Квартира',
+    });
+
+    expect(first.id).not.toBe(second.id);
+    expect((await repository.getPlots()).map((plot) => plot.id)).toEqual([
+      'dacha',
+      'home',
+      first.id,
+      second.id,
+    ]);
+  });
+
+  it.each([
+    { name: '', locationLabel: 'За домом' },
+    { name: '   ', locationLabel: 'За домом' },
+    { name: 'Теплица', locationLabel: '' },
+    { name: 'Теплица', locationLabel: '  ' },
+  ])(
+    'rejects empty values without changing the plot list: %j',
+    async (input) => {
+      const repository = createRepository();
+
+      await expect(repository.createPlot(input)).rejects.toThrow();
+      expect((await repository.getPlots()).map((plot) => plot.id)).toEqual([
+        'dacha',
+        'home',
+      ]);
+    },
+  );
+
+  it('returns null weather for a newly created plot', async () => {
+    const repository = createRepository();
+
+    const created = await repository.createPlot({
+      name: 'Теплица',
+      locationLabel: 'За домом',
+    });
+
+    await expect(repository.getCurrentWeather(created.id)).resolves.toBeNull();
+  });
+
+  it('returns an independent snapshot of a created plot', async () => {
+    const repository = createRepository();
+
+    const created = await repository.createPlot({
+      name: 'Теплица',
+      locationLabel: 'За домом',
+    });
+    created.name = 'изменено';
+
+    const stored = (await repository.getPlots()).find(
+      (plot) => plot.id === created.id,
+    );
+    expect(stored?.name).toBe('Теплица');
   });
 });

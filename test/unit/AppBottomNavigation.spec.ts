@@ -9,9 +9,9 @@ import AppBottomNavigation from '~/shared/components/AppBottomNavigation.vue';
 import ru from '~/i18n/locales/ru.json';
 
 const navigationItems = [
-  { path: '/', label: 'Сегодня' },
-  { path: '/garden', label: 'Сад' },
-  { path: '/settings', label: 'Настройки' },
+  { path: '/garden', label: 'Мой сад' },
+  { path: '/tasks', label: 'Задачи' },
+  { path: '/help', label: 'Помощь' },
 ];
 
 const NavigationTestHost = defineComponent({
