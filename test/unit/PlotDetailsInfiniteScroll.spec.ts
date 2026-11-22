@@ -111,10 +111,10 @@ function twoCategoryRepository(pagesCount: number): GardenRepository {
   paged.getPlantCategorySummaries = () =>
     Promise.resolve([
       { category: 'fruit-berry', count: pagesCount },
-      { category: 'vegetable', count: 1 },
+      { category: 'vegetable-garden', count: 1 },
     ]);
   paged.getPlantsByPlotCategory = (plotId, category, page) =>
-    category === 'vegetable'
+    category === 'vegetable-garden'
       ? new MockGardenRepository().getPlantsByPlotCategory(
           plotId,
           category,

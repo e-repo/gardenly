@@ -2,15 +2,15 @@ import type { CultureCategory } from '~/domain/garden';
 
 const categoryIcons: Record<CultureCategory, string> = {
   'fruit-berry': 'mdi-food-apple-outline',
-  vegetable: 'mdi-carrot',
-  ornamental: 'mdi-pine-tree',
+  'vegetable-garden': 'mdi-carrot',
+  'woody-ornamental': 'mdi-pine-tree',
   flower: 'mdi-flower-outline',
 };
 
 export const cultureCategoryOrder: readonly CultureCategory[] = [
   'fruit-berry',
-  'vegetable',
-  'ornamental',
+  'vegetable-garden',
+  'woody-ornamental',
   'flower',
 ];
 

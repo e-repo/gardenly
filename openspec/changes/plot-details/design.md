@@ -36,7 +36,8 @@ Mock-реализация ищет в рабочем списке участко
 `Culture.category` приводится к фиксированному справочному набору, согласованному с будущим backend-каталогом:
 
 ```ts
-type CultureCategory = 'fruit-berry' | 'vegetable' | 'ornamental' | 'flower';
+type CultureCategory =
+  'fruit-berry' | 'vegetable-garden' | 'woody-ornamental' | 'flower';
 ```
 
 Это предметные идентификаторы, а не UI-группировка: категория живёт в данных каталога, её отображаемое название локализуется через i18n (`Плодовые и ягодные культуры`, `Огород`, `Лиственные и хвойные`, `Цветы`). Отдельная сущность «группа» не вводится — группы на экране являются проекцией категории.
@@ -93,12 +94,12 @@ getPlantsByPlotCategory(
 - `app/pages/plots/[plotId].vue` — только композиция: заголовок раздела не нужен, страница рендерит `<PlotDetails />`.
 - `PlotDetails.vue` — читает `plotId` из route, запускает загрузку в `onMounted` и переключает состояния: `<PlotDetailsLoading v-if>`, `<PlotDetailsLoadError v-else-if>`, `<PlotNotFound v-else-if>`, `<PlotDetailsContent v-else>`. Паттерн повторяет `GardenOverview` без computed-мапы `<component :is>`: цепочка `v-if/v-else` читается линейно и не конфликтует со строгими type-aware правилами линтера.
 - `PlotDetailsContent.vue` — шапка (возврат на `/garden` иконкой `mdi-arrow-left`, название, локация, погода с fallback) и аккордеон категорий; пустой состав показывает локализованное сообщение вместо секций.
-- Состав рендерится через `v-expansion-panels` (single-expand, по умолчанию свёрнут): по одной панели на категорию из сводки в фиксированном порядке `fruit-berry → vegetable → ornamental → flower`. Заголовок панели — MDI-иконка категории, локализованное название и количество посадок из сводки. Тело панели — индикатор загрузки, сообщение об ошибке либо список посадок с `v-infinite-scroll` и кнопкой «Показать ещё» после лимита автоподгрузки, пока есть `nextPageToken`. Состояние сворачивания локально для экрана и не сохраняется.
+- Состав рендерится через `v-expansion-panels` (single-expand, по умолчанию свёрнут): по одной панели на категорию из сводки в фиксированном порядке `fruit-berry → vegetable-garden → woody-ornamental → flower`. Заголовок панели — MDI-иконка категории, локализованное название и количество посадок из сводки. Тело панели — индикатор загрузки, сообщение об ошибке либо список посадок с `v-infinite-scroll` и кнопкой «Показать ещё» после лимита автоподгрузки, пока есть `nextPageToken`. Состояние сворачивания локально для экрана и не сохраняется.
 - `PlantListItem.vue` — одна посадка внутри панели: название культуры с сортом, количество, возраст и место одной читаемой строкой, как в макете («Яблоня Антоновка · 8 лет · 1 шт · у забора»). Необязательные поля рендерятся только при наличии значения.
 
 ### Иконки категорий и форматирование
 
-`app/modules/plots/plants.ts` — явное отображение `Culture.category` в MDI-иконки: `fruit-berry` → `mdi-food-apple-outline`, `vegetable` → `mdi-carrot`, `ornamental` → `mdi-pine-tree`, `flower` → `mdi-flower-outline` (по аналогии с `weather.ts`); предметные типы и mock-данные иконок не содержат. Там же — фиксированный порядок категорий.
+`app/modules/plots/plants.ts` — явное отображение `Culture.category` в MDI-иконки: `fruit-berry` → `mdi-food-apple-outline`, `vegetable-garden` → `mdi-carrot`, `woody-ornamental` → `mdi-pine-tree`, `flower` → `mdi-flower-outline` (по аналогии с `weather.ts`); предметные типы и mock-данные иконок не содержат. Там же — фиксированный порядок категорий.
 
 Возраст вычисляется как `текущий год − plantedYear` на клиенте и форматируется plural-строкой vue-i18n с формами русской локали («1 год / 2 года / 5 лет»). Количество — `{n} шт.`. Все строки — через `app/i18n/locales/ru.json`, секция `pages.plotDetails`.
 

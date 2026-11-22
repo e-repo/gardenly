@@ -28,7 +28,7 @@ export interface Plant {
 }
 
 export type CultureCategory =
-  'fruit-berry' | 'vegetable' | 'ornamental' | 'flower';
+  'fruit-berry' | 'vegetable-garden' | 'woody-ornamental' | 'flower';
 
 export interface Culture {
   id: string;

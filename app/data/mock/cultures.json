@@ -26,13 +26,13 @@
   {
     "id": "tomato",
     "name": "Томат",
-    "category": "vegetable",
+    "category": "vegetable-garden",
     "commonVarieties": ["Бычье сердце", "Сливка", "Черри"]
   },
   {
     "id": "maple",
     "name": "Клён",
-    "category": "ornamental",
+    "category": "woody-ornamental",
     "commonVarieties": ["Гиннала", "Остролистный", "Сахарный"]
   },
   {

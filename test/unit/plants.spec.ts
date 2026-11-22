@@ -16,8 +16,8 @@ describe('plants module', () => {
   it('keeps the fixed category order', () => {
     expect(cultureCategoryOrder).toEqual([
       'fruit-berry',
-      'vegetable',
-      'ornamental',
+      'vegetable-garden',
+      'woody-ornamental',
       'flower',
     ]);
   });

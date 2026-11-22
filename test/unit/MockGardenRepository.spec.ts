@@ -26,16 +26,21 @@ describe('MockGardenRepository', () => {
     }
 
     const fruitBerry = await readAllPages('fruit-berry');
-    const vegetable = await readAllPages('vegetable');
-    const ornamental = await readAllPages('ornamental');
+    const vegetableGarden = await readAllPages('vegetable-garden');
+    const woodyOrnamental = await readAllPages('woody-ornamental');
     const flower = await readAllPages('flower');
 
     expect(fruitBerry).toHaveLength(32);
-    expect(vegetable).toHaveLength(1);
-    expect(ornamental).toHaveLength(1);
+    expect(vegetableGarden).toHaveLength(1);
+    expect(woodyOrnamental).toHaveLength(1);
     expect(flower).toHaveLength(1);
 
-    const all = [...fruitBerry, ...vegetable, ...ornamental, ...flower];
+    const all = [
+      ...fruitBerry,
+      ...vegetableGarden,
+      ...woodyOrnamental,
+      ...flower,
+    ];
     expect(all.every((plant) => plant.plotId === 'dacha')).toBe(true);
     expect(new Set(all.map((plant) => plant.id)).size).toBe(all.length);
 
@@ -76,8 +81,8 @@ describe('MockGardenRepository', () => {
 
     const allowed: CultureCategory[] = [
       'fruit-berry',
-      'vegetable',
-      'ornamental',
+      'vegetable-garden',
+      'woody-ornamental',
       'flower',
     ];
     expect(
@@ -210,8 +215,8 @@ describe('MockGardenRepository', () => {
     expect(summaries).toEqual(
       expect.arrayContaining([
         { category: 'fruit-berry', count: 32 },
-        { category: 'vegetable', count: 1 },
-        { category: 'ornamental', count: 1 },
+        { category: 'vegetable-garden', count: 1 },
+        { category: 'woody-ornamental', count: 1 },
         { category: 'flower', count: 1 },
       ]),
     );

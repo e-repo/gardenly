@@ -2,8 +2,8 @@
 
 ## 1. Категории культур и mock-данные
 
-- [x] 1.1 Заменить `Culture.category` на `'fruit-berry' | 'vegetable' | 'ornamental' | 'flower'` в `app/domain/garden.ts`.
-- [x] 1.2 Обновить `app/data/mock/cultures.json`: существующие культуры получают `fruit-berry`, добавляются томат (`vegetable`), клён (`ornamental`) и роза (`flower`) с распространёнными сортами.
+- [x] 1.1 Заменить `Culture.category` на `'fruit-berry' | 'vegetable-garden' | 'woody-ornamental' | 'flower'` в `app/domain/garden.ts`.
+- [x] 1.2 Обновить `app/data/mock/cultures.json`: существующие культуры получают `fruit-berry`, добавляются томат (`vegetable-garden`), клён (`woody-ornamental`) и роза (`flower`) с распространёнными сортами.
 - [x] 1.3 Расширить `app/data/mock/plants.json` посадками «Дачи»: Томат Бычье сердце 5 шт, Клён Гиннала 1 шт, Роза Фламентанц 3 шт и 32 посадки категории `fruit-berry` для проверки постраничной выдачи.
 - [x] 1.4 Обновить repository-тесты: исходный состав покрывает все четыре категории (32 посадки `fruit-berry`), каталог покрывает все четыре категории.
 

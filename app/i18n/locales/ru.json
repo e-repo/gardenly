@@ -25,8 +25,8 @@
       "sectionLoadError": "Не удалось загрузить посадки. Сверните и раскройте раздел ещё раз.",
       "categories": {
         "fruit-berry": "Плодовые и ягодные культуры",
-        "vegetable": "Огород",
-        "ornamental": "Лиственные и хвойные",
+        "vegetable-garden": "Огород",
+        "woody-ornamental": "Лиственные и хвойные",
         "flower": "Цветы"
       },
       "age": {
