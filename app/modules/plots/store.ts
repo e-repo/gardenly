@@ -35,7 +35,8 @@ export const usePlotsStore = defineStore('plots', () => {
       profile.value = loadedProfile;
       plots.value = loadedPlots;
       weatherByPlotId.value = Object.fromEntries(weatherEntries);
-    } catch {
+    } catch (error) {
+      console.error('Не удалось загрузить сад', error);
       profile.value = null;
       plots.value = [];
       weatherByPlotId.value = {};
@@ -55,7 +56,8 @@ export const usePlotsStore = defineStore('plots', () => {
       plots.value = [...plots.value, created];
       weatherByPlotId.value = { ...weatherByPlotId.value, [created.id]: null };
       return true;
-    } catch {
+    } catch (error) {
+      console.error('Не удалось создать участок', error);
       hasCreateError.value = true;
       return false;
     } finally {

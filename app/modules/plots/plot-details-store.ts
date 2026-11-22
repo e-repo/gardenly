@@ -57,7 +57,8 @@ export const usePlotDetailsStore = defineStore('plot-details', () => {
       weather.value = plotWeather;
       categoryPlants.value = {};
       loadedPlotId.value = plotId;
-    } catch {
+    } catch (error) {
+      console.error('Не удалось загрузить детали участка', error);
       plot.value = null;
       categorySummaries.value = [];
       cultureById.value = {};
@@ -110,7 +111,8 @@ export const usePlotDetailsStore = defineStore('plot-details', () => {
         hasLoadError: false,
         loaded: true,
       });
-    } catch {
+    } catch (error) {
+      console.error('Не удалось загрузить посадки категории', error);
       setCategoryPlants(category, {
         plants: current?.plants ?? [],
         nextPageToken: current?.nextPageToken,
