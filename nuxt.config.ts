@@ -49,6 +49,7 @@ export default defineNuxtConfig({
               background: '#ECEFF1',
               surface: '#FFFFFF',
               'surface-variant': '#E0F2F1',
+              'teal-lighten-3': '#80CBC4',
               'teal-lighten-5': '#E0F2F1',
               'blue-grey-darken-4': '#263238',
               'on-primary': '#FFFFFF',
