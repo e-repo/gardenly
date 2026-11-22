@@ -74,9 +74,11 @@ describe('GardenOverview', () => {
 
     const cards = wrapper.findAll('.v-card');
     expect(cards).toHaveLength(2);
+    expect(cards[0]?.attributes('href')).toBe('/plots/dacha');
     expect(cards[0]?.text()).toContain('Дача');
     expect(cards[0]?.text()).toContain('Новая Усмань');
     expect(cards[0]?.text()).toContain('+18 °C');
+    expect(cards[1]?.attributes('href')).toBe('/plots/home');
     expect(cards[1]?.text()).toContain('Дом');
     expect(cards[1]?.text()).toContain('+16 °C');
   });
@@ -116,7 +118,7 @@ describe('GardenOverview', () => {
     expect(wrapper.text()).not.toContain('Дача');
   });
 
-  it('does not use emoji or unsupported plot controls', async () => {
+  it('links plot cards to details without unsupported controls', async () => {
     const wrapper = await mountOverview(new MockGardenRepository());
     await flushPromises();
 
@@ -125,8 +127,9 @@ describe('GardenOverview', () => {
     );
     const cards = wrapper.findAll('.v-card');
     for (const card of cards) {
-      expect(card.find('a').exists()).toBe(false);
+      expect(card.element.tagName).toBe('A');
       expect(card.find('button').exists()).toBe(false);
     }
+    expect(wrapper.text()).not.toContain('Редактировать');
   });
 });

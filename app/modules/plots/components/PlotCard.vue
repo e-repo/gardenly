@@ -15,6 +15,7 @@ defineProps<{
       class="plot-card mb-3"
       variant="outlined"
       :elevation="isHovering ? 4 : 0"
+      :to="`/plots/${plot.id}`"
     >
       <v-card-item>
         <v-card-title class="text-blue-grey-darken-4">
