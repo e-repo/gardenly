@@ -37,5 +37,315 @@
     "locationNote": "ряд 2",
     "quantity": 3,
     "createdAt": "2026-01-15T09:15:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "tomato-byche-serdtse",
+    "cultureId": "tomato",
+    "variety": "Бычье сердце",
+    "plantedYear": 2026,
+    "locationNote": "грядка 1",
+    "quantity": 5,
+    "createdAt": "2026-03-01T09:00:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "maple-ginnala",
+    "cultureId": "maple",
+    "variety": "Гиннала",
+    "plantedYear": 2019,
+    "locationNote": "у дороги",
+    "quantity": 1,
+    "createdAt": "2026-01-15T09:20:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "rose-flamentants",
+    "cultureId": "rose",
+    "variety": "Фламентанц",
+    "plantedYear": 2022,
+    "locationNote": "клумба у крыльца",
+    "quantity": 3,
+    "createdAt": "2026-01-15T09:25:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "apple-melba",
+    "cultureId": "apple",
+    "variety": "Мельба",
+    "plantedYear": 2019,
+    "locationNote": "у забора",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:00:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "apple-spartak",
+    "cultureId": "apple",
+    "variety": "Спартак",
+    "plantedYear": 2020,
+    "locationNote": "центр сада",
+    "quantity": 2,
+    "createdAt": "2026-01-16T09:01:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "apple-antonovka-2",
+    "cultureId": "apple",
+    "variety": "Антоновка",
+    "plantedYear": 2016,
+    "locationNote": "задний ряд",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:02:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "apple-melba-2",
+    "cultureId": "apple",
+    "variety": "Мельба",
+    "plantedYear": 2021,
+    "locationNote": "задний ряд",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:03:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "pear-kafedralnaya",
+    "cultureId": "pear",
+    "variety": "Кафедральная",
+    "plantedYear": 2018,
+    "locationNote": "у дороги",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:04:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "pear-chizhovskaya",
+    "cultureId": "pear",
+    "variety": "Чижовская",
+    "plantedYear": 2022,
+    "locationNote": "ряд 3",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:05:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "pear-lada-2",
+    "cultureId": "pear",
+    "variety": "Лада",
+    "plantedYear": 2020,
+    "locationNote": "ряд 3",
+    "quantity": 2,
+    "createdAt": "2026-01-16T09:06:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "cherry-shokoladnitsa",
+    "cultureId": "cherry",
+    "variety": "Шоколадница",
+    "plantedYear": 2019,
+    "locationNote": "у калитки",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:07:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "cherry-turgenevka",
+    "cultureId": "cherry",
+    "variety": "Тургеневка",
+    "plantedYear": 2021,
+    "locationNote": "южная сторона",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:08:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "cherry-molodezhnaya-2",
+    "cultureId": "cherry",
+    "variety": "Молодёжная",
+    "plantedYear": 2022,
+    "locationNote": "южная сторона",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:09:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "black-currant-dobrynya",
+    "cultureId": "black-currant",
+    "variety": "Добрыня",
+    "plantedYear": 2021,
+    "locationNote": "ряд 2",
+    "quantity": 4,
+    "createdAt": "2026-01-16T09:10:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "black-currant-selechenskaya",
+    "cultureId": "black-currant",
+    "variety": "Селеченская",
+    "plantedYear": 2022,
+    "locationNote": "ряд 2",
+    "quantity": 3,
+    "createdAt": "2026-01-16T09:11:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "black-currant-perun",
+    "cultureId": "black-currant",
+    "variety": "Перун",
+    "plantedYear": 2023,
+    "locationNote": "ряд 4",
+    "quantity": 2,
+    "createdAt": "2026-01-16T09:12:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "apple-spartak-2",
+    "cultureId": "apple",
+    "variety": "Спартак",
+    "plantedYear": 2017,
+    "locationNote": "центр сада",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:13:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "apple-antonovka-3",
+    "cultureId": "apple",
+    "variety": "Антоновка",
+    "plantedYear": 2015,
+    "locationNote": "старый сад",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:14:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "pear-kafedralnaya-2",
+    "cultureId": "pear",
+    "variety": "Кафедральная",
+    "plantedYear": 2019,
+    "locationNote": "у дороги",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:15:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "cherry-shokoladnitsa-2",
+    "cultureId": "cherry",
+    "variety": "Шоколадница",
+    "plantedYear": 2020,
+    "locationNote": "у калитки",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:16:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "black-currant-dobrynya-2",
+    "cultureId": "black-currant",
+    "variety": "Добрыня",
+    "plantedYear": 2020,
+    "locationNote": "ряд 4",
+    "quantity": 3,
+    "createdAt": "2026-01-16T09:17:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "apple-melba-3",
+    "cultureId": "apple",
+    "variety": "Мельба",
+    "plantedYear": 2018,
+    "locationNote": "старый сад",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:18:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "pear-chizhovskaya-2",
+    "cultureId": "pear",
+    "variety": "Чижовская",
+    "plantedYear": 2021,
+    "locationNote": "ряд 5",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:19:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "cherry-turgenevka-2",
+    "cultureId": "cherry",
+    "variety": "Тургеневка",
+    "plantedYear": 2023,
+    "locationNote": "южная сторона",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:20:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "black-currant-selechenskaya-2",
+    "cultureId": "black-currant",
+    "variety": "Селеченская",
+    "plantedYear": 2024,
+    "locationNote": "ряд 5",
+    "quantity": 2,
+    "createdAt": "2026-01-16T09:21:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "apple-spartak-3",
+    "cultureId": "apple",
+    "variety": "Спартак",
+    "plantedYear": 2019,
+    "locationNote": "старый сад",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:22:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "pear-lada-3",
+    "cultureId": "pear",
+    "variety": "Лада",
+    "plantedYear": 2022,
+    "locationNote": "ряд 5",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:23:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "cherry-molodezhnaya-3",
+    "cultureId": "cherry",
+    "variety": "Молодёжная",
+    "plantedYear": 2023,
+    "locationNote": "задний ряд",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:24:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "black-currant-perun-2",
+    "cultureId": "black-currant",
+    "variety": "Перун",
+    "plantedYear": 2024,
+    "locationNote": "ряд 6",
+    "quantity": 2,
+    "createdAt": "2026-01-16T09:25:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "apple-antonovka-4",
+    "cultureId": "apple",
+    "variety": "Антоновка",
+    "plantedYear": 2017,
+    "locationNote": "старый сад",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:26:00Z"
+  },
+  {
+    "plotId": "dacha",
+    "id": "pear-kafedralnaya-3",
+    "cultureId": "pear",
+    "variety": "Кафедральная",
+    "plantedYear": 2023,
+    "locationNote": "ряд 6",
+    "quantity": 1,
+    "createdAt": "2026-01-16T09:27:00Z"
   }
 ]

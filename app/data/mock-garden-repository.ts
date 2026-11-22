@@ -1,9 +1,13 @@
 import type {
   CareEvent,
   Culture,
+  CultureCategory,
   GardenRepository,
   NewPlotInput,
   Plant,
+  PlantCategorySummary,
+  PlantsPage,
+  PlantsPageRequest,
   Plot,
   UserProfile,
   WeatherForecast,
@@ -25,6 +29,12 @@ const weatherByPlot = weatherData as {
   [plotId: string]: WeatherForecast | undefined;
 };
 
+const cultureNameById = new Map(
+  cultures.map((culture) => [culture.id, culture.name]),
+);
+
+const DEFAULT_PLANTS_PAGE_SIZE = 10;
+
 export class MockGardenRepository implements GardenRepository {
   private readonly plots: Plot[] = structuredClone(plotsData);
   private plotCounter = 0;
@@ -35,6 +45,12 @@ export class MockGardenRepository implements GardenRepository {
 
   getPlots(): Promise<Plot[]> {
     return Promise.resolve(structuredClone(this.plots));
+  }
+
+  getPlot(id: string): Promise<Plot | null> {
+    const plot = this.plots.find((candidate) => candidate.id === id);
+
+    return Promise.resolve(plot ? structuredClone(plot) : null);
   }
 
   createPlot(input: NewPlotInput): Promise<Plot> {
@@ -64,10 +80,60 @@ export class MockGardenRepository implements GardenRepository {
     return Promise.resolve(plant ? structuredClone(plant) : null);
   }
 
-  getPlantsByPlot(plotId: string): Promise<Plant[]> {
-    const plotPlants = plants.filter((plant) => plant.plotId === plotId);
+  getPlantCategorySummaries(plotId: string): Promise<PlantCategorySummary[]> {
+    const countByCategory = new Map<CultureCategory, number>();
 
-    return Promise.resolve(structuredClone(plotPlants));
+    for (const plant of plants) {
+      if (plant.plotId !== plotId) {
+        continue;
+      }
+      const category = cultures.find(
+        (culture) => culture.id === plant.cultureId,
+      )?.category;
+      if (!category) {
+        continue;
+      }
+      countByCategory.set(category, (countByCategory.get(category) ?? 0) + 1);
+    }
+
+    const summaries: PlantCategorySummary[] = [
+      ...countByCategory.entries(),
+    ].map(([category, count]) => ({ category, count }));
+
+    return Promise.resolve(structuredClone(summaries));
+  }
+
+  getPlantsByPlotCategory(
+    plotId: string,
+    category: CultureCategory,
+    page: PlantsPageRequest = {},
+  ): Promise<PlantsPage> {
+    const pageSize = page.pageSize ?? DEFAULT_PLANTS_PAGE_SIZE;
+    const offset = page.pageToken ? Number.parseInt(page.pageToken, 10) : 0;
+
+    const sorted = plants
+      .filter((plant) => plant.plotId === plotId)
+      .filter(
+        (plant) =>
+          cultures.find((culture) => culture.id === plant.cultureId)
+            ?.category === category,
+      )
+      .sort((first, second) => {
+        const byCulture = (
+          cultureNameById.get(first.cultureId) ?? ''
+        ).localeCompare(cultureNameById.get(second.cultureId) ?? '', 'ru');
+
+        return byCulture !== 0 ? byCulture : first.id.localeCompare(second.id);
+      });
+
+    const pagePlants = sorted.slice(offset, offset + pageSize);
+    const nextOffset = offset + pageSize;
+    const result: PlantsPage = { plants: structuredClone(pagePlants) };
+    if (nextOffset < sorted.length) {
+      result.nextPageToken = String(nextOffset);
+    }
+
+    return Promise.resolve(result);
   }
 
   getCultures(): Promise<Culture[]> {

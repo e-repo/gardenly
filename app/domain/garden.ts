@@ -27,10 +27,13 @@ export interface Plant {
   createdAt: string;
 }
 
+export type CultureCategory =
+  'fruit-berry' | 'vegetable' | 'ornamental' | 'flower';
+
 export interface Culture {
   id: string;
   name: string;
-  category: 'tree' | 'bush' | 'berry' | 'flower';
+  category: CultureCategory;
   commonVarieties: string[];
 }
 
@@ -62,12 +65,33 @@ export interface WeatherForecast {
   condition: 'sunny' | 'partly-cloudy' | 'cloudy' | 'rain';
 }
 
+export interface PlantCategorySummary {
+  category: CultureCategory;
+  count: number;
+}
+
+export interface PlantsPage {
+  plants: Plant[];
+  nextPageToken?: string;
+}
+
+export interface PlantsPageRequest {
+  pageSize?: number;
+  pageToken?: string;
+}
+
 export interface GardenRepository {
   getProfile(): Promise<UserProfile>;
   getPlots(): Promise<Plot[]>;
+  getPlot(id: string): Promise<Plot | null>;
   createPlot(input: NewPlotInput): Promise<Plot>;
   getPlant(id: string): Promise<Plant | null>;
-  getPlantsByPlot(plotId: string): Promise<Plant[]>;
+  getPlantCategorySummaries(plotId: string): Promise<PlantCategorySummary[]>;
+  getPlantsByPlotCategory(
+    plotId: string,
+    category: CultureCategory,
+    page?: PlantsPageRequest,
+  ): Promise<PlantsPage>;
   getCultures(): Promise<Culture[]>;
   getCurrentWeather(plotId: string): Promise<WeatherForecast | null>;
   getCareEvents(plotId: string): Promise<CareEvent[]>;

@@ -2,25 +2,43 @@
   {
     "id": "apple",
     "name": "Яблоня",
-    "category": "tree",
+    "category": "fruit-berry",
     "commonVarieties": ["Антоновка", "Мельба", "Спартак"]
   },
   {
     "id": "pear",
     "name": "Груша",
-    "category": "tree",
+    "category": "fruit-berry",
     "commonVarieties": ["Лада", "Кафедральная", "Чижовская"]
   },
   {
     "id": "cherry",
     "name": "Вишня",
-    "category": "tree",
+    "category": "fruit-berry",
     "commonVarieties": ["Молодёжная", "Шоколадница", "Тургеневка"]
   },
   {
     "id": "black-currant",
     "name": "Смородина чёрная",
-    "category": "bush",
+    "category": "fruit-berry",
     "commonVarieties": ["Добрыня", "Селеченская", "Перун"]
+  },
+  {
+    "id": "tomato",
+    "name": "Томат",
+    "category": "vegetable",
+    "commonVarieties": ["Бычье сердце", "Сливка", "Черри"]
+  },
+  {
+    "id": "maple",
+    "name": "Клён",
+    "category": "ornamental",
+    "commonVarieties": ["Гиннала", "Остролистный", "Сахарный"]
+  },
+  {
+    "id": "rose",
+    "name": "Роза",
+    "category": "flower",
+    "commonVarieties": ["Фламентанц", "Глория Дей", "Плетистая"]
   }
 ]

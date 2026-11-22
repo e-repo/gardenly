@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { CultureCategory } from '~/domain/garden';
 import { MockGardenRepository } from '~/data/mock-garden-repository';
 
 function createRepository() {
@@ -6,69 +7,46 @@ function createRepository() {
 }
 
 describe('MockGardenRepository', () => {
-  it('returns the initial garden with plant details', async () => {
+  it('returns the initial garden across all categories', async () => {
     const repository = createRepository();
 
-    const plants = await repository.getPlantsByPlot('dacha');
+    async function readAllPages(category: CultureCategory) {
+      const plants = [];
+      let pageToken: string | undefined;
+      do {
+        const page = await repository.getPlantsByPlotCategory(
+          'dacha',
+          category,
+          { pageToken },
+        );
+        plants.push(...page.plants);
+        pageToken = page.nextPageToken;
+      } while (pageToken !== undefined);
+      return plants;
+    }
 
-    expect(
-      plants.map(
-        ({
-          id,
-          plotId,
-          cultureId,
-          variety,
-          plantedYear,
-          locationNote,
-          quantity,
-        }) => ({
-          id,
-          plotId,
-          cultureId,
-          variety,
-          plantedYear,
-          locationNote,
-          quantity,
-        }),
-      ),
-    ).toEqual([
-      {
-        id: 'apple-antonovka',
-        plotId: 'dacha',
-        cultureId: 'apple',
-        variety: 'Антоновка',
-        plantedYear: 2018,
-        locationNote: 'у забора',
-        quantity: 1,
-      },
-      {
-        id: 'pear-lada',
-        plotId: 'dacha',
-        cultureId: 'pear',
-        variety: 'Лада',
-        plantedYear: 2021,
-        locationNote: 'рядом с яблоней',
-        quantity: 1,
-      },
-      {
-        id: 'cherry-molodezhnaya',
-        plotId: 'dacha',
-        cultureId: 'cherry',
-        variety: 'Молодёжная',
-        plantedYear: 2020,
-        locationNote: 'у калитки',
-        quantity: 1,
-      },
-      {
-        id: 'black-currant',
-        plotId: 'dacha',
-        cultureId: 'black-currant',
-        variety: undefined,
-        plantedYear: 2023,
-        locationNote: 'ряд 2',
-        quantity: 3,
-      },
-    ]);
+    const fruitBerry = await readAllPages('fruit-berry');
+    const vegetable = await readAllPages('vegetable');
+    const ornamental = await readAllPages('ornamental');
+    const flower = await readAllPages('flower');
+
+    expect(fruitBerry).toHaveLength(32);
+    expect(vegetable).toHaveLength(1);
+    expect(ornamental).toHaveLength(1);
+    expect(flower).toHaveLength(1);
+
+    const all = [...fruitBerry, ...vegetable, ...ornamental, ...flower];
+    expect(all.every((plant) => plant.plotId === 'dacha')).toBe(true);
+    expect(new Set(all.map((plant) => plant.id)).size).toBe(all.length);
+
+    const apple = fruitBerry.find((plant) => plant.id === 'apple-antonovka');
+    expect(apple).toMatchObject({
+      cultureId: 'apple',
+      variety: 'Антоновка',
+      plantedYear: 2018,
+      locationNote: 'у забора',
+      quantity: 1,
+    });
   });
 
   it('returns a known plant and null for an unknown id', async () => {
@@ -81,7 +59,7 @@ describe('MockGardenRepository', () => {
     await expect(repository.getPlant('missing-plant')).resolves.toBeNull();
   });
 
-  it('returns the culture catalog', async () => {
+  it('returns the culture catalog covering all categories', async () => {
     const repository = createRepository();
 
     const cultures = await repository.getCultures();
@@ -91,13 +69,23 @@ describe('MockGardenRepository', () => {
       'pear',
       'cherry',
       'black-currant',
+      'tomato',
+      'maple',
+      'rose',
     ]);
-    expect(cultures.map((culture) => culture.name)).toEqual([
-      'Яблоня',
-      'Груша',
-      'Вишня',
-      'Смородина чёрная',
-    ]);
+
+    const allowed: CultureCategory[] = [
+      'fruit-berry',
+      'vegetable',
+      'ornamental',
+      'flower',
+    ];
+    expect(
+      cultures.every((culture) => allowed.includes(culture.category)),
+    ).toBe(true);
+    expect(new Set(cultures.map((culture) => culture.category))).toEqual(
+      new Set(allowed),
+    );
     expect(cultures.every((culture) => !('emoji' in culture))).toBe(true);
   });
 
@@ -105,20 +93,31 @@ describe('MockGardenRepository', () => {
     const repository = createRepository();
 
     const plots = await repository.getPlots();
+    const plot = await repository.getPlot('dacha');
     const plant = await repository.getPlant('apple-antonovka');
-    const plants = await repository.getPlantsByPlot('dacha');
+    const page = await repository.getPlantsByPlotCategory(
+      'dacha',
+      'fruit-berry',
+    );
+    const summaries = await repository.getPlantCategorySummaries('dacha');
     const cultures = await repository.getCultures();
     const weather = await repository.getCurrentWeather('dacha');
     const careEvents = await repository.getCareEvents('dacha');
 
-    plots.forEach((plot) => {
-      plot.locationLabel = 'изменено';
+    plots.forEach((item) => {
+      item.locationLabel = 'изменено';
     });
+    if (plot) {
+      plot.name = 'изменено';
+    }
     if (plant) {
       plant.locationNote = 'изменено';
     }
-    plants.forEach((item) => {
+    page.plants.forEach((item) => {
       item.quantity = 99;
+    });
+    summaries.forEach((item) => {
+      item.count = 99;
     });
     cultures.forEach((culture) => {
       culture.commonVarieties = [];
@@ -131,14 +130,22 @@ describe('MockGardenRepository', () => {
     });
 
     expect(
-      (await repository.getPlots()).map((plot) => plot.locationLabel),
+      (await repository.getPlots()).map((item) => item.locationLabel),
     ).toEqual(['Новая Усмань', 'Воронеж, Железнодорожный район']);
+    expect((await repository.getPlot('dacha'))?.name).toBe('Дача');
     expect((await repository.getPlant('apple-antonovka'))?.locationNote).toBe(
       'у забора',
     );
     expect(
-      (await repository.getPlantsByPlot('dacha')).map((item) => item.quantity),
-    ).toEqual([1, 1, 1, 3]);
+      (
+        await repository.getPlantsByPlotCategory('dacha', 'fruit-berry')
+      ).plants.every((item) => item.quantity !== 99),
+    ).toBe(true);
+    expect(
+      (await repository.getPlantCategorySummaries('dacha')).find(
+        (summary) => summary.category === 'fruit-berry',
+      )?.count,
+    ).toBe(32);
     expect(
       (await repository.getCultures()).every(
         (culture) => culture.commonVarieties.length > 0,
@@ -169,22 +176,120 @@ describe('MockGardenRepository', () => {
     ]);
   });
 
-  it('returns all and only plants belonging to the requested plot', async () => {
+  it('returns a known plot and null for an unknown id', async () => {
     const repository = createRepository();
 
-    const plants = await repository.getPlantsByPlot('dacha');
+    await expect(repository.getPlot('dacha')).resolves.toEqual({
+      id: 'dacha',
+      name: 'Дача',
+      locationLabel: 'Новая Усмань',
+    });
+    await expect(repository.getPlot('missing-plot')).resolves.toBeNull();
+  });
 
-    expect(plants.map((plant) => plant.id)).toEqual([
-      'apple-antonovka',
-      'pear-lada',
-      'cherry-molodezhnaya',
-      'black-currant',
-    ]);
-    expect(plants.every((plant) => plant.plotId === 'dacha')).toBe(true);
-    await expect(repository.getPlantsByPlot('home')).resolves.toEqual([]);
-    await expect(repository.getPlantsByPlot('missing-plot')).resolves.toEqual(
+  it('returns a created plot by id', async () => {
+    const repository = createRepository();
+
+    const created = await repository.createPlot({
+      name: 'Теплица',
+      locationLabel: 'За домом',
+    });
+
+    await expect(repository.getPlot(created.id)).resolves.toEqual({
+      id: created.id,
+      name: 'Теплица',
+      locationLabel: 'За домом',
+    });
+  });
+
+  it('returns category summaries with exact plant counts', async () => {
+    const repository = createRepository();
+
+    const summaries = await repository.getPlantCategorySummaries('dacha');
+
+    expect(summaries).toEqual(
+      expect.arrayContaining([
+        { category: 'fruit-berry', count: 32 },
+        { category: 'vegetable', count: 1 },
+        { category: 'ornamental', count: 1 },
+        { category: 'flower', count: 1 },
+      ]),
+    );
+    expect(summaries).toHaveLength(4);
+
+    await expect(repository.getPlantCategorySummaries('home')).resolves.toEqual(
       [],
     );
+    await expect(
+      repository.getPlantCategorySummaries('missing-plot'),
+    ).resolves.toEqual([]);
+  });
+
+  it('returns category plants in stable order for the requested plot only', async () => {
+    const repository = createRepository();
+
+    const page = await repository.getPlantsByPlotCategory(
+      'dacha',
+      'fruit-berry',
+    );
+
+    expect(page.plants).toHaveLength(10);
+    expect(page.plants.every((plant) => plant.plotId === 'dacha')).toBe(true);
+    expect(page.plants.slice(0, 7).map((plant) => plant.cultureId)).toEqual(
+      Array(7).fill('cherry'),
+    );
+    expect(page.plants.slice(7).map((plant) => plant.cultureId)).toEqual(
+      Array(3).fill('pear'),
+    );
+    expect(page.nextPageToken).toBeDefined();
+
+    await expect(
+      repository.getPlantsByPlotCategory('home', 'fruit-berry'),
+    ).resolves.toEqual({ plants: [] });
+    await expect(
+      repository.getPlantsByPlotCategory('missing-plot', 'fruit-berry'),
+    ).resolves.toEqual({ plants: [] });
+  });
+
+  it('paginates category plants without repeats or gaps', async () => {
+    const repository = createRepository();
+
+    const first = await repository.getPlantsByPlotCategory(
+      'dacha',
+      'fruit-berry',
+      { pageSize: 2 },
+    );
+    expect(first.plants.map((plant) => plant.id)).toEqual([
+      'cherry-molodezhnaya',
+      'cherry-molodezhnaya-2',
+    ]);
+    expect(first.nextPageToken).toBeDefined();
+
+    const second = await repository.getPlantsByPlotCategory(
+      'dacha',
+      'fruit-berry',
+      { pageSize: 2, pageToken: first.nextPageToken },
+    );
+    expect(second.plants.map((plant) => plant.id)).toEqual([
+      'cherry-molodezhnaya-3',
+      'cherry-shokoladnitsa',
+    ]);
+    expect(second.nextPageToken).toBeDefined();
+
+    const ids = [];
+    let pageToken: string | undefined;
+    do {
+      const page = await repository.getPlantsByPlotCategory(
+        'dacha',
+        'fruit-berry',
+        { pageSize: 5, pageToken },
+      );
+      ids.push(...page.plants.map((plant) => plant.id));
+      pageToken = page.nextPageToken;
+    } while (pageToken !== undefined);
+
+    expect(ids).toHaveLength(32);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 
   it('returns weather for each plot and null for an unknown id', async () => {
