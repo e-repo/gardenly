@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { CultureCategory } from '~/domain/garden';
+import type { CultureCategory, NewPlantInput } from '~/domain/garden';
 import { MockGardenRepository } from '~/data/mock-garden-repository';
 
 function createRepository() {
@@ -449,5 +449,193 @@ describe('MockGardenRepository', () => {
       (plot) => plot.id === created.id,
     );
     expect(stored?.name).toBe('Теплица');
+  });
+});
+
+describe('MockGardenRepository createPlant', () => {
+  it('creates a plant with defaults and monotonous mock ids', async () => {
+    const repository = createRepository();
+
+    const first = await repository.createPlant({
+      plotId: 'dacha',
+      cultureId: 'apple',
+      variety: 'Антоновка',
+      plantedYear: 2020,
+    });
+    const second = await repository.createPlant({
+      plotId: 'dacha',
+      cultureId: 'apple',
+      variety: 'Мельба',
+      plantedYear: 2021,
+    });
+
+    expect(first.id).toBe('plant-1');
+    expect(second.id).toBe('plant-2');
+    expect(first).toMatchObject({
+      plotId: 'dacha',
+      cultureId: 'apple',
+      variety: 'Антоновка',
+      plantedYear: 2020,
+      quantity: 1,
+    });
+    expect(first.customName).toBeUndefined();
+    expect(first.locationNote).toBeUndefined();
+    expect(first.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+    await expect(repository.getPlant(first.id)).resolves.toEqual(first);
+  });
+
+  it('normalizes all string values and keeps optional fields', async () => {
+    const repository = createRepository();
+
+    const created = await repository.createPlant({
+      plotId: '  dacha  ',
+      cultureId: ' apple ',
+      variety: '  Антоновка  ',
+      customName: '  Любимая яблоня  ',
+      plantedYear: 2020,
+      locationNote: '  у забора  ',
+      quantity: 3,
+    });
+
+    expect(created).toMatchObject({
+      plotId: 'dacha',
+      cultureId: 'apple',
+      variety: 'Антоновка',
+      customName: 'Любимая яблоня',
+      plantedYear: 2020,
+      locationNote: 'у забора',
+      quantity: 3,
+    });
+  });
+
+  it('shows a created plant in summaries and paginated reads', async () => {
+    const repository = createRepository();
+
+    const created = await repository.createPlant({
+      plotId: 'dacha',
+      cultureId: 'tomato',
+      variety: 'Сливка',
+      plantedYear: 2020,
+    });
+
+    const summaries = await repository.getPlantCategorySummaries('dacha');
+    expect(
+      summaries.find((summary) => summary.category === 'vegetable-garden'),
+    ).toEqual({ category: 'vegetable-garden', count: 2 });
+    const page = await repository.getPlantsByPlotCategory(
+      'dacha',
+      'vegetable-garden',
+    );
+    expect(page.plants.map((plant) => plant.id)).toContain(created.id);
+    const otherRepository = createRepository();
+    const otherPage = await otherRepository.getPlantsByPlotCategory(
+      'dacha',
+      'vegetable-garden',
+    );
+    expect(otherPage.plants.map((plant) => plant.id)).not.toContain(created.id);
+  });
+
+  it.each([
+    {
+      plotId: 'missing-plot',
+      cultureId: 'apple',
+      variety: 'Антоновка',
+      plantedYear: 2020,
+    },
+    {
+      plotId: 'dacha',
+      cultureId: 'missing-culture',
+      variety: 'Антоновка',
+      plantedYear: 2020,
+    },
+    { plotId: 'dacha', cultureId: 'apple', plantedYear: 2020 },
+    { plotId: 'dacha', cultureId: 'apple', variety: 'Антоновка' },
+    {
+      plotId: 'dacha',
+      cultureId: 'apple',
+      variety: 'Неизвестный',
+      plantedYear: 2020,
+    },
+    {
+      plotId: 'dacha',
+      cultureId: 'apple',
+      variety: 'Антоновка',
+      plantedYear: 2020,
+      quantity: 0,
+    },
+    {
+      plotId: 'dacha',
+      cultureId: 'apple',
+      variety: 'Антоновка',
+      plantedYear: 2020,
+      quantity: 1.5,
+    },
+    {
+      plotId: 'dacha',
+      cultureId: 'apple',
+      variety: 'Антоновка',
+      plantedYear: new Date().getFullYear() + 1,
+    },
+    {
+      plotId: 'dacha',
+      cultureId: 'apple',
+      variety: 'Антоновка',
+      plantedYear: 2020,
+      customName: '  А  ',
+    },
+    {
+      plotId: 'dacha',
+      cultureId: 'apple',
+      variety: 'Антоновка',
+      plantedYear: 2020,
+      customName: 'А'.repeat(201),
+    },
+  ])('rejects invalid input without changing plants: %j', async (input) => {
+    const repository = createRepository();
+    const before = await repository.getPlantCategorySummaries('dacha');
+
+    await expect(
+      repository.createPlant(input as NewPlantInput),
+    ).rejects.toThrow();
+    await expect(
+      repository.getPlantCategorySummaries('dacha'),
+    ).resolves.toEqual(before);
+  });
+
+  it.each([
+    { customName: '  Абв  ', expected: 'Абв' },
+    { customName: 'А'.repeat(200), expected: 'А'.repeat(200) },
+    { customName: '   ', expected: undefined },
+  ])('accepts valid custom name boundaries: %j', async (testCase) => {
+    const repository = createRepository();
+
+    const created = await repository.createPlant({
+      plotId: 'dacha',
+      cultureId: 'apple',
+      variety: 'Антоновка',
+      plantedYear: 2020,
+      customName: testCase.customName,
+    });
+
+    expect(created.customName).toBe(testCase.expected);
+  });
+
+  it('returns an independent snapshot of a created plant', async () => {
+    const repository = createRepository();
+    const created = await repository.createPlant({
+      plotId: 'dacha',
+      cultureId: 'apple',
+      variety: 'Антоновка',
+      plantedYear: 2020,
+      customName: 'Исходное название',
+      quantity: 2,
+    });
+
+    created.customName = 'изменено';
+    created.quantity = 99;
+
+    const stored = await repository.getPlant(created.id);
+    expect(stored?.customName).toBe('Исходное название');
+    expect(stored?.quantity).toBe(2);
   });
 });

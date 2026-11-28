@@ -27,6 +27,16 @@ export interface Plant {
   createdAt: string;
 }
 
+export interface NewPlantInput {
+  plotId: string;
+  cultureId: string;
+  variety: string;
+  customName?: string;
+  plantedYear: number;
+  locationNote?: string;
+  quantity?: number;
+}
+
 export type CultureCategory =
   'fruit-berry' | 'vegetable-garden' | 'woody-ornamental' | 'flower';
 
@@ -86,6 +96,7 @@ export interface GardenRepository {
   getPlot(id: string): Promise<Plot | null>;
   createPlot(input: NewPlotInput): Promise<Plot>;
   getPlant(id: string): Promise<Plant | null>;
+  createPlant(input: NewPlantInput): Promise<Plant>;
   getPlantCategorySummaries(plotId: string): Promise<PlantCategorySummary[]>;
   getPlantsByPlotCategory(
     plotId: string,

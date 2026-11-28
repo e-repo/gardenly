@@ -11,6 +11,7 @@ import { MockGardenRepository } from '~/data/mock-garden-repository';
 import type { GardenRepository } from '~/domain/garden';
 import ru from '~/i18n/locales/ru.json';
 import PlotDetails from '~/modules/plots/plot-details/components/PlotDetails.vue';
+import { usePlotDetailsStore } from '~/modules/plots/plot-details/store';
 
 const { repositoryRef } = vi.hoisted(() => ({
   repositoryRef: { current: null as GardenRepository | null },
@@ -41,6 +42,7 @@ async function mountDetails(repository: GardenRepository, plotId: string) {
     routes: [
       { path: '/garden', component: { template: '<div />' } },
       { path: '/plots/:plotId', component: { template: '<div />' } },
+      { path: '/plots/:plotId/plants/new', component: { template: '<div />' } },
     ],
   });
   await router.push(`/plots/${plotId}`);
@@ -171,5 +173,46 @@ describe('PlotDetails', () => {
     expect(wrapper.text()).not.toContain('Редактировать');
     expect(wrapper.text()).not.toContain('Удалить');
     expect(wrapper.text()).not.toContain('История');
+  });
+});
+
+describe('PlotDetails add plant', () => {
+  it('links to plant creation below the categories', async () => {
+    const wrapper = await mountDetails(new MockGardenRepository(), 'dacha');
+    await flushPromises();
+
+    const link = wrapper.find('a[href="/plots/dacha/plants/new"]');
+    expect(link.exists()).toBe(true);
+    expect(link.text()).toContain('Добавить растение');
+  });
+
+  it('offers the first plant action in an empty composition', async () => {
+    const wrapper = await mountDetails(new MockGardenRepository(), 'home');
+    await flushPromises();
+
+    const link = wrapper.find('a[href="/plots/home/plants/new"]');
+    expect(link.exists()).toBe(true);
+    expect(link.text()).toContain('Добавить растение');
+  });
+
+  it('shows a created plant in its section with an updated count', async () => {
+    const wrapper = await mountDetails(new MockGardenRepository(), 'dacha');
+    await flushPromises();
+    const store = usePlotDetailsStore();
+
+    await store.createPlant({
+      plotId: 'dacha',
+      cultureId: 'tomato',
+      variety: 'Сливка',
+      plantedYear: 2020,
+    });
+    await flushPromises();
+    await wrapper.findAll('.v-expansion-panel-title')[1]?.trigger('click');
+    await flushPromises();
+
+    const active = wrapper.find('.v-expansion-panel--active');
+    expect(active.text()).toContain('Огород');
+    expect(active.text()).toContain('· 2');
+    expect(active.text()).toContain('Томат Сливка');
   });
 });

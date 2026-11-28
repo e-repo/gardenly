@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import type {
   Culture,
   CultureCategory,
+  NewPlantInput,
   Plant,
   PlantCategorySummary,
   Plot,
@@ -27,6 +28,8 @@ export const usePlotDetailsStore = defineStore('plot-details', () => {
     Partial<Record<CultureCategory, CategoryPlantsState>>
   >({});
   const loadedPlotId = ref<string | null>(null);
+  const isCreating = ref(false);
+  const hasCreateError = ref(false);
 
   const isNotFound = computed(
     () =>
@@ -143,6 +146,53 @@ export const usePlotDetailsStore = defineStore('plot-details', () => {
     await loadPlantsPage(category);
   }
 
+  async function createPlant(input: NewPlantInput): Promise<boolean> {
+    if (isCreating.value) {
+      return false;
+    }
+
+    const repository = useGardenRepository();
+    isCreating.value = true;
+    hasCreateError.value = false;
+
+    try {
+      const culture =
+        cultureById.value[input.cultureId] ??
+        (await repository.getCultures()).find(
+          (candidate) => candidate.id === input.cultureId,
+        );
+      if (!culture) {
+        throw new Error('Культура не найдена');
+      }
+
+      await repository.createPlant(input);
+      const summary = categorySummaries.value.find(
+        (candidate) => candidate.category === culture.category,
+      );
+      if (summary) {
+        summary.count += 1;
+      } else {
+        categorySummaries.value = [
+          ...categorySummaries.value,
+          { category: culture.category, count: 1 },
+        ];
+      }
+
+      categoryPlants.value = Object.fromEntries(
+        Object.entries(categoryPlants.value).filter(
+          ([category]) => category !== culture.category,
+        ),
+      );
+      return true;
+    } catch (error) {
+      console.error('Не удалось создать посадку', error);
+      hasCreateError.value = true;
+      return false;
+    } finally {
+      isCreating.value = false;
+    }
+  }
+
   return {
     plot,
     categorySummaries,
@@ -152,8 +202,11 @@ export const usePlotDetailsStore = defineStore('plot-details', () => {
     hasLoadError,
     isNotFound,
     categoryPlants,
+    isCreating,
+    hasCreateError,
     loadPlotDetails,
     loadCategory,
     loadMorePlants,
+    createPlant,
   };
 });

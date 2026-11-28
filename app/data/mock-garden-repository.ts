@@ -3,6 +3,7 @@ import type {
   Culture,
   CultureCategory,
   GardenRepository,
+  NewPlantInput,
   NewPlotInput,
   Plant,
   PlantCategorySummary,
@@ -19,7 +20,6 @@ import plotsData from './mock/plots.json';
 import profileData from './mock/profile.json';
 import weatherData from './mock/weather.json';
 
-const plants = plantsData as Plant[];
 const cultures = culturesData as Culture[];
 const careEvents = careEventsData as CareEvent[];
 const profile: UserProfile = profileData;
@@ -37,7 +37,9 @@ const DEFAULT_PLANTS_PAGE_SIZE = 10;
 
 export class MockGardenRepository implements GardenRepository {
   private readonly plots: Plot[] = structuredClone(plotsData);
+  private readonly plants: Plant[] = structuredClone(plantsData);
   private plotCounter = 0;
+  private plantCounter = 0;
 
   getProfile(): Promise<UserProfile> {
     return Promise.resolve(structuredClone(profile));
@@ -75,15 +77,72 @@ export class MockGardenRepository implements GardenRepository {
   }
 
   getPlant(id: string): Promise<Plant | null> {
-    const plant = plants.find((candidate) => candidate.id === id);
+    const plant = this.plants.find((candidate) => candidate.id === id);
 
     return Promise.resolve(plant ? structuredClone(plant) : null);
+  }
+
+  createPlant(input: NewPlantInput): Promise<Plant> {
+    const runtimeInput: Partial<NewPlantInput> = input;
+    const plotId = input.plotId.trim();
+    const cultureId = input.cultureId.trim();
+    const variety = runtimeInput.variety?.trim() || undefined;
+    const customName = input.customName?.trim() || undefined;
+    const locationNote = input.locationNote?.trim() || undefined;
+    const quantity = input.quantity ?? 1;
+    const plot = this.plots.find((candidate) => candidate.id === plotId);
+    const culture = cultures.find((candidate) => candidate.id === cultureId);
+
+    if (!plot || !culture) {
+      return Promise.reject(new Error('Участок или культура не найдены'));
+    }
+    if (!variety) {
+      return Promise.reject(new Error('Сорт обязателен'));
+    }
+    if (!culture.commonVarieties.includes(variety)) {
+      return Promise.reject(new Error('Сорт не входит в каталог культуры'));
+    }
+    if (!Number.isInteger(quantity) || quantity < 1) {
+      return Promise.reject(
+        new Error('Количество должно быть целым числом не меньше 1'),
+      );
+    }
+    if (
+      runtimeInput.plantedYear === undefined ||
+      !Number.isInteger(runtimeInput.plantedYear) ||
+      runtimeInput.plantedYear > new Date().getFullYear()
+    ) {
+      return Promise.reject(new Error('Год посадки некорректен'));
+    }
+    if (customName && (customName.length < 3 || customName.length > 200)) {
+      return Promise.reject(
+        new Error(
+          'Пользовательское название должно содержать от 3 до 200 символов',
+        ),
+      );
+    }
+
+    this.plantCounter += 1;
+    const plant: Plant = {
+      id: `plant-${String(this.plantCounter)}`,
+      plotId,
+      cultureId,
+      variety,
+      customName,
+      plantedYear: runtimeInput.plantedYear,
+      locationNote,
+      quantity,
+      createdAt: new Date().toISOString().replace(/\.\d{3}Z$/, 'Z'),
+    };
+    this.plants.push(plant);
+
+    return Promise.resolve(structuredClone(plant));
   }
 
   getPlantCategorySummaries(plotId: string): Promise<PlantCategorySummary[]> {
     const countByCategory = new Map<CultureCategory, number>();
 
-    for (const plant of plants) {
+    for (const plant of this.plants) {
       if (plant.plotId !== plotId) {
         continue;
       }
@@ -111,7 +170,7 @@ export class MockGardenRepository implements GardenRepository {
     const pageSize = page.pageSize ?? DEFAULT_PLANTS_PAGE_SIZE;
     const offset = page.pageToken ? Number.parseInt(page.pageToken, 10) : 0;
 
-    const sorted = plants
+    const sorted = this.plants
       .filter((plant) => plant.plotId === plotId)
       .filter(
         (plant) =>

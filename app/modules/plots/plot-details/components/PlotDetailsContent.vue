@@ -121,6 +121,15 @@ async function onLoadMore(
     <p v-if="orderedSummaries.length === 0" class="text-body-1 text-blue-grey">
       {{ $t('pages.plotDetails.emptyPlants') }}
     </p>
+    <v-btn
+      v-if="orderedSummaries.length === 0"
+      block
+      color="primary"
+      :to="`/plots/${store.plot.id}/plants/new`"
+      prepend-icon="mdi-plus"
+    >
+      {{ $t('pages.plotDetails.addPlant') }}
+    </v-btn>
 
     <v-expansion-panels
       v-else
@@ -179,6 +188,16 @@ async function onLoadMore(
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
+    <v-btn
+      v-if="orderedSummaries.length > 0"
+      block
+      color="primary"
+      :to="`/plots/${store.plot.id}/plants/new`"
+      prepend-icon="mdi-plus"
+      class="mt-4"
+    >
+      {{ $t('pages.plotDetails.addPlant') }}
+    </v-btn>
   </div>
 </template>
 

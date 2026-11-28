@@ -1,8 +1,9 @@
 import { mockNuxtImport } from '@nuxt/test-utils/runtime';
 import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { toRaw } from 'vue';
 import { MockGardenRepository } from '~/data/mock-garden-repository';
-import type { GardenRepository, PlantsPage } from '~/domain/garden';
+import type { GardenRepository, Plant, PlantsPage } from '~/domain/garden';
 import { usePlotDetailsStore } from '~/modules/plots/plot-details/store';
 
 const { repositoryRef } = vi.hoisted(() => ({
@@ -188,5 +189,114 @@ describe('plot details store', () => {
 
     expect(loadSpy).not.toHaveBeenCalled();
     expect(store.categoryPlants['fruit-berry']).toBeUndefined();
+  });
+});
+
+describe('plot details store createPlant', () => {
+  it('updates the category count and invalidates its loaded pages', async () => {
+    useRepository(new MockGardenRepository());
+    const store = usePlotDetailsStore();
+    await store.loadPlotDetails('dacha');
+    await store.loadCategory('fruit-berry');
+    expect(store.categoryPlants['fruit-berry']?.loaded).toBe(true);
+
+    const created = await store.createPlant({
+      plotId: 'dacha',
+      cultureId: 'apple',
+      variety: 'Антоновка',
+      plantedYear: 2020,
+    });
+
+    expect(created).toBe(true);
+    expect(
+      store.categorySummaries.find(
+        (summary) => summary.category === 'fruit-berry',
+      )?.count,
+    ).toBe(33);
+    expect(store.categoryPlants['fruit-berry']).toBeUndefined();
+    expect(store.isCreating).toBe(false);
+    expect(store.hasCreateError).toBe(false);
+  });
+
+  it('adds a summary when the first plant category appears', async () => {
+    useRepository(new MockGardenRepository());
+    const store = usePlotDetailsStore();
+    await store.loadPlotDetails('home');
+
+    const created = await store.createPlant({
+      plotId: 'home',
+      cultureId: 'rose',
+      variety: 'Фламентанц',
+      plantedYear: 2020,
+    });
+
+    expect(created).toBe(true);
+    expect(store.categorySummaries).toEqual([{ category: 'flower', count: 1 }]);
+  });
+
+  it('keeps the screen state when creation fails', async () => {
+    useRepository(
+      repositoryWith({
+        createPlant: () => Promise.reject(new Error('fail')),
+      }),
+    );
+    const store = usePlotDetailsStore();
+    await store.loadPlotDetails('dacha');
+    await store.loadCategory('fruit-berry');
+    const summaries = structuredClone(toRaw(store.categorySummaries));
+    const categoryPlants = structuredClone(toRaw(store.categoryPlants));
+
+    const created = await store.createPlant({
+      plotId: 'dacha',
+      cultureId: 'apple',
+      variety: 'Антоновка',
+      plantedYear: 2020,
+    });
+
+    expect(created).toBe(false);
+    expect(store.hasCreateError).toBe(true);
+    expect(store.isCreating).toBe(false);
+    expect(store.plot?.name).toBe('Дача');
+    expect(store.categorySummaries).toEqual(summaries);
+    expect(store.categoryPlants).toEqual(categoryPlants);
+  });
+
+  it('blocks a repeated submit while creation is pending', async () => {
+    let finishCreate!: (plant: Plant) => void;
+    const createSpy = vi.fn(
+      () =>
+        new Promise<Plant>((resolve) => {
+          finishCreate = resolve;
+        }),
+    );
+    useRepository(repositoryWith({ createPlant: createSpy }));
+    const store = usePlotDetailsStore();
+    await store.loadPlotDetails('dacha');
+
+    const first = store.createPlant({
+      plotId: 'dacha',
+      cultureId: 'apple',
+      variety: 'Антоновка',
+      plantedYear: 2020,
+    });
+    expect(store.isCreating).toBe(true);
+    const second = await store.createPlant({
+      plotId: 'dacha',
+      cultureId: 'apple',
+      variety: 'Антоновка',
+      plantedYear: 2020,
+    });
+
+    expect(second).toBe(false);
+    expect(createSpy).toHaveBeenCalledTimes(1);
+    finishCreate({
+      id: 'plant-1',
+      plotId: 'dacha',
+      cultureId: 'apple',
+      quantity: 1,
+      createdAt: '2026-01-01T00:00:00Z',
+    });
+    await expect(first).resolves.toBe(true);
+    expect(store.isCreating).toBe(false);
   });
 });
