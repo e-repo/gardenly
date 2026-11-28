@@ -10,8 +10,8 @@ import { VApp } from 'vuetify/components';
 import { MockGardenRepository } from '~/data/mock-garden-repository';
 import type { GardenRepository } from '~/domain/garden';
 import ru from '~/i18n/locales/ru.json';
-import PlotCreateForm from '~/modules/plots/components/PlotCreateForm.vue';
-import { usePlotsStore } from '~/modules/plots/store';
+import PlotCreateForm from '~/modules/plots/plot-create/components/PlotCreateForm.vue';
+import { usePlotsStore } from '~/modules/plots/garden/store';
 
 const { repositoryRef } = vi.hoisted(() => ({
   repositoryRef: { current: null as GardenRepository | null },

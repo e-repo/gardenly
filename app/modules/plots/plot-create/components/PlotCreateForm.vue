@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { usePlotsStore } from '~/modules/plots/store';
+import { usePlotsStore } from '~/modules/plots/garden/store';
 
 const { t } = useI18n();
 const router = useRouter();

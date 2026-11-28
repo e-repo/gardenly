@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MockGardenRepository } from '~/data/mock-garden-repository';
 import type { GardenRepository } from '~/domain/garden';
-import { usePlotsStore } from '~/modules/plots/store';
+import { usePlotsStore } from '~/modules/plots/garden/store';
 
 const { repositoryRef } = vi.hoisted(() => ({
   repositoryRef: { current: null as GardenRepository | null },

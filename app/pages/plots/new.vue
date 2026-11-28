@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PlotCreateForm from '~/modules/plots/components/PlotCreateForm.vue';
+import PlotCreateForm from '~/modules/plots/plot-create/components/PlotCreateForm.vue';
 </script>
 
 <template>

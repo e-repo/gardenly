@@ -15,7 +15,7 @@ import type {
   PlantsPage,
 } from '~/domain/garden';
 import ru from '~/i18n/locales/ru.json';
-import PlotDetails from '~/modules/plots/components/PlotDetails.vue';
+import PlotDetails from '~/modules/plots/plot-details/components/PlotDetails.vue';
 
 const { repositoryRef } = vi.hoisted(() => ({
   repositoryRef: { current: null as GardenRepository | null },
@@ -107,7 +107,7 @@ function pagedRepository(pagesCount: number): GardenRepository {
 
 function twoCategoryRepository(pagesCount: number): GardenRepository {
   const paged = pagedRepository(pagesCount);
-  const pagedPlants = paged.getPlantsByPlotCategory;
+  const pagedPlants = paged.getPlantsByPlotCategory.bind(paged);
   paged.getPlantCategorySummaries = () =>
     Promise.resolve([
       { category: 'fruit-berry', count: pagesCount },

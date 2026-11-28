@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PlotDetails from '~/modules/plots/components/PlotDetails.vue';
+import PlotDetails from '~/modules/plots/plot-details/components/PlotDetails.vue';
 </script>
 
 <template>

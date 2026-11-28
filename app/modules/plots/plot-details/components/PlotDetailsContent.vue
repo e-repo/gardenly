@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CultureCategory, Culture, Plant } from '~/domain/garden';
-import PlantListItem from '~/modules/plots/components/PlantListItem.vue';
-import { usePlotDetailsStore } from '~/modules/plots/plot-details-store';
+import PlantListItem from '~/modules/plots/plot-details/components/PlantListItem.vue';
+import { usePlotDetailsStore } from '~/modules/plots/plot-details/store';
 import { categoryIcon, cultureCategoryOrder } from '~/modules/plots/plants';
 import { formatTemperature, weatherIcon } from '~/modules/plots/weather';
 

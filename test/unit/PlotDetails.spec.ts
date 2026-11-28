@@ -10,7 +10,7 @@ import { VApp } from 'vuetify/components';
 import { MockGardenRepository } from '~/data/mock-garden-repository';
 import type { GardenRepository } from '~/domain/garden';
 import ru from '~/i18n/locales/ru.json';
-import PlotDetails from '~/modules/plots/components/PlotDetails.vue';
+import PlotDetails from '~/modules/plots/plot-details/components/PlotDetails.vue';
 
 const { repositoryRef } = vi.hoisted(() => ({
   repositoryRef: { current: null as GardenRepository | null },

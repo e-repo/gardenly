@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import PlotCard from '~/modules/plots/components/PlotCard.vue';
-import { usePlotsStore } from '~/modules/plots/store';
+import PlotCard from '~/modules/plots/garden/components/PlotCard.vue';
+import { usePlotsStore } from '~/modules/plots/garden/store';
 
 const store = usePlotsStore();
 </script>

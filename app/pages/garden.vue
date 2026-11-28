@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import GardenOverview from '~/modules/plots/components/GardenOverview.vue';
+import GardenOverview from '~/modules/plots/garden/components/GardenOverview.vue';
 </script>
 
 <template>
